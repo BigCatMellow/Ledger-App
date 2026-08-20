@@ -6,23 +6,32 @@
 <meta name="theme-color" content="#191814">
 <title>Ledger</title>
 <style>html,body{margin:0;background:#efece5;color:#191814;font:16px system-ui,sans-serif}main{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.err{max-width:640px;background:#fffdf8;border:1px solid #ddd7cc;border-radius:14px;padding:20px}small{color:#6f6a60}</style>
+<script src="./assets/app-1.js"></script>
+<script src="./assets/app-2.js"></script>
+<script src="./assets/support-1.js"></script>
+<script src="./assets/support-2.js"></script>
+<script src="./assets/support-3.js"></script>
 </head>
-<body><main id="loading"><div><strong>Opening Ledger…</strong><br><small>Loading the application.</small></div></main>
+<body><main id="loading"><div><strong>Opening Ledger…</strong><br><small>Loading the application locally.</small></div></main>
 <script>
-const RAW_BASE='https://raw.githubusercontent.com/BigCatMellow/Ledger-App/main/assets/';
-async function gunzipText(name){
-  const url=RAW_BASE+name;
-  const response=await fetch(url,{cache:'no-store'});
-  if(!response.ok) throw new Error('Could not load '+name+' ('+response.status+')');
-  if(!('DecompressionStream' in window)) throw new Error('This browser does not support DecompressionStream. Use a current Chrome, Edge, Firefox, or Safari release.');
-  const stream=response.body.pipeThrough(new DecompressionStream('gzip'));
+function decodeBase64Bytes(text){
+  const binary=atob(text), bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+  return bytes;
+}
+async function gunzipBase64(parts){
+  const bytes=decodeBase64Bytes(parts.join(''));
+  if(!('DecompressionStream' in window)) throw new Error('Your browser does not support gzip decompression. Update Chrome, Edge, Firefox, or Safari.');
+  const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
   return await new Response(stream).text();
 }
 (async()=>{
   try{
+    if(!window.__ledger_app||window.__ledger_app.length!==2) throw new Error('Embedded Ledger app chunks did not load.');
+    if(!window.__ledger_support||window.__ledger_support.length!==3) throw new Error('Embedded Ledger runtime chunks did not load.');
     const [appHtml,support]=await Promise.all([
-      gunzipText('app-index.html.gz'),
-      gunzipText('support.js.gz')
+      gunzipBase64(window.__ledger_app),
+      gunzipBase64(window.__ledger_support)
     ]);
     const supportUrl=URL.createObjectURL(new Blob([support],{type:'text/javascript'}));
     const marker='<script src="./support.js"><\/script>';
@@ -30,8 +39,9 @@ async function gunzipText(name){
     const hydrated=appHtml.replace(marker,'<script src="'+supportUrl+'"><\/script>');
     document.open(); document.write(hydrated); document.close();
   }catch(error){
-    console.error(error);
-    document.getElementById('loading').innerHTML='<div class="err"><strong>Ledger could not start.</strong><p>'+String(error.message||error)+'</p><small>Refresh the page after checking the repository files.</small></div>';
+    console.error('Ledger bootstrap error:',error);
+    const target=document.getElementById('loading');
+    if(target) target.innerHTML='<div class="err"><strong>Ledger could not start.</strong><p>'+String(error.message||error)+'</p><small>Reload after the latest Pages deployment finishes.</small></div>';
   }
 })();
 </script>
