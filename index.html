@@ -6,11 +6,13 @@
 <meta name="theme-color" content="#191814">
 <title>Ledger</title>
 <style>html,body{margin:0;background:#efece5;color:#191814;font:16px system-ui,sans-serif}main{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.err{max-width:640px;background:#fffdf8;border:1px solid #ddd7cc;border-radius:14px;padding:20px}small{color:#6f6a60}</style>
-<script src="./assets/app-1.js"></script>
+<script src="./assets/appfix-1.js"></script>
+<script src="./assets/appfix-2.js"></script>
 <script src="./assets/app-2.js"></script>
 <script src="./assets/support-1.js"></script>
 <script src="./assets/support-2.js"></script>
-<script src="./assets/support-3.js"></script>
+<script src="./assets/supportfix-1.js"></script>
+<script src="./assets/supportfix-2.js"></script>
 </head>
 <body><main id="loading"><div><strong>Opening Ledger…</strong><br><small>Loading the application locally.</small></div></main>
 <script>
@@ -27,8 +29,8 @@ async function gunzipBase64(parts){
 }
 (async()=>{
   try{
-    if(!window.__ledger_app||window.__ledger_app.length!==2) throw new Error('Embedded Ledger app chunks did not load.');
-    if(!window.__ledger_support||window.__ledger_support.length!==3) throw new Error('Embedded Ledger runtime chunks did not load.');
+    if(!window.__ledger_app||window.__ledger_app.length!==3) throw new Error('Embedded Ledger app chunks did not load.');
+    if(!window.__ledger_support||window.__ledger_support.length!==4) throw new Error('Embedded Ledger runtime chunks did not load.');
     const [appHtml,support]=await Promise.all([
       gunzipBase64(window.__ledger_app),
       gunzipBase64(window.__ledger_support)
