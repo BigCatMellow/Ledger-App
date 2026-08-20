@@ -1,27 +1,37 @@
 # Ledger — notes & roadmaps
 
-This repository contains the public, static Ledger web app.
+This repository contains the **public static web app only**. Project data and email-report infrastructure live in the private `BigCatMellow/Notes` repository.
 
 ## Architecture
 
-- `index.html` — Ledger UI and browser-local working state.
-- `support.js` — UI runtime used by Ledger.
-- `sync.html` — optional authenticated sync page that writes the latest Ledger snapshot to the private `BigCatMellow/Notes` repository.
-- Project data is **not** committed to this public repository.
-- Email credentials are **not** stored here; the private Notes repository owns the scheduled report workflow and GitHub Actions secrets.
+- `index.html` — lightweight GitHub Pages loader.
+- `assets/app-index.html.gz` — compressed mobile-first Ledger application.
+- `assets/support.js.gz` — compressed UI runtime.
+- `sync.html` — authenticated sync page that writes the latest Ledger snapshot to private `BigCatMellow/Notes` → `ledger-data` → `data/ledger.json`.
+- `.nojekyll` — keeps GitHub Pages serving the static files directly.
 
-Ledger stores its live working state in browser `localStorage` under `ledger-notes-roadmaps-v2`. Because GitHub Pages for repositories under the same account uses the same `https://bigcatmellow.github.io` origin, moving from `/Notes/` to `/Ledger-App/` does not change the localStorage origin.
+Project data, GitHub tokens, and email credentials are **not committed to this public repository**.
+
+Ledger keeps its live working state in browser `localStorage` under `ledger-notes-roadmaps-v2`. Both the old `/Notes/` Pages path and the new `/Ledger-App/` path use the same `https://bigcatmellow.github.io` origin, so existing browser-local Ledger state remains available on the new site.
 
 ## GitHub Pages
 
-Enable Pages from this repository's `main` branch and `/ (root)` folder. The expected site URL is:
+Enable Pages from:
+
+`Settings → Pages → Deploy from a branch → main → / (root)`
+
+Expected site:
 
 `https://bigcatmellow.github.io/Ledger-App/`
 
+Private sync page:
+
+`https://bigcatmellow.github.io/Ledger-App/sync.html`
+
 ## Private sync
 
-Open `sync.html` from the Pages site and use a fine-grained GitHub token restricted to `BigCatMellow/Notes` with only:
+Use a fine-grained GitHub token restricted to `BigCatMellow/Notes` with only:
 
-- Repository permissions → Contents: Read and write
+- Repository permissions → **Contents: Read and write**
 
-The token is kept in browser `sessionStorage` and is never committed.
+Paste it into `sync.html`. The token is kept in browser `sessionStorage` and is never committed.
