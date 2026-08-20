@@ -9,9 +9,11 @@
 </head>
 <body><main id="loading"><div><strong>Opening Ledger…</strong><br><small>Loading the application.</small></div></main>
 <script>
-async function gunzipText(url){
-  const response=await fetch(url,{cache:'no-cache'});
-  if(!response.ok) throw new Error('Could not load '+url+' ('+response.status+')');
+const RAW_BASE='https://raw.githubusercontent.com/BigCatMellow/Ledger-App/main/assets/';
+async function gunzipText(name){
+  const url=RAW_BASE+name;
+  const response=await fetch(url,{cache:'no-store'});
+  if(!response.ok) throw new Error('Could not load '+name+' ('+response.status+')');
   if(!('DecompressionStream' in window)) throw new Error('This browser does not support DecompressionStream. Use a current Chrome, Edge, Firefox, or Safari release.');
   const stream=response.body.pipeThrough(new DecompressionStream('gzip'));
   return await new Response(stream).text();
@@ -19,8 +21,8 @@ async function gunzipText(url){
 (async()=>{
   try{
     const [appHtml,support]=await Promise.all([
-      gunzipText('./assets/app-index.html.gz'),
-      gunzipText('./assets/support.js.gz')
+      gunzipText('app-index.html.gz'),
+      gunzipText('support.js.gz')
     ]);
     const supportUrl=URL.createObjectURL(new Blob([support],{type:'text/javascript'}));
     const marker='<script src="./support.js"><\/script>';
