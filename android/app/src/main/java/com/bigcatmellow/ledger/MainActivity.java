@@ -28,6 +28,8 @@ public class MainActivity extends Activity {
     private static final String APP_HOST = "bigcatmellow.github.io";
     private static final String APP_PATH_PREFIX = "/Ledger-App/";
     private static final String APP_URL = "https://bigcatmellow.github.io/Ledger-App/stationery/";
+    private static final String ANDROID_SYNC_URL = "https://bigcatmellow.github.io/Ledger-App/stationery/android-sync.html";
+    private static final String ANDROID_BRIDGE_URL = "https://bigcatmellow.github.io/Ledger-App/stationery/android-bridge.js?v=1";
     private static final int FILE_CHOOSER_REQUEST = 1201;
     private static final int SAVE_FILE_REQUEST = 1202;
 
@@ -100,7 +102,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                installThemeBridge();
+                installAndroidPageBridge();
             }
 
             @Override
@@ -127,6 +129,13 @@ public class MainActivity extends Activity {
 
         if ("https".equalsIgnoreCase(scheme)
                 && APP_HOST.equalsIgnoreCase(host)
+                && "/Ledger-App/sync.html".equals(path)) {
+            webView.loadUrl(ANDROID_SYNC_URL);
+            return true;
+        }
+
+        if ("https".equalsIgnoreCase(scheme)
+                && APP_HOST.equalsIgnoreCase(host)
                 && path != null
                 && path.startsWith(APP_PATH_PREFIX)) {
             return false;
@@ -145,13 +154,18 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    private void installThemeBridge() {
+    private void installAndroidPageBridge() {
         String script = "(function(){"
-                + "if(!window.LedgerAndroid||window.__ledgerAndroidThemeObserver)return;"
+                + "if(!window.LedgerAndroid)return;"
+                + "if(!window.__ledgerAndroidThemeObserver){"
                 + "var report=function(){try{LedgerAndroid.setTheme(document.documentElement.dataset.theme||'light')}catch(e){}};"
                 + "report();"
                 + "window.__ledgerAndroidThemeObserver=new MutationObserver(report);"
                 + "window.__ledgerAndroidThemeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});"
+                + "}"
+                + "if(!document.getElementById('ledgerAndroidBridgeScript')){"
+                + "var s=document.createElement('script');s.id='ledgerAndroidBridgeScript';s.src='" + ANDROID_BRIDGE_URL + "';document.head.appendChild(s);"
+                + "}"
                 + "})();";
         webView.evaluateJavascript(script, null);
     }
