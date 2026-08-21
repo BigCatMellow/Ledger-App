@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f2eee3">
+<title>Ledger — Android Sync</title>
+<style>
+:root{--paper:#f7f3e9;--paper-deep:#efe8d8;--desk:#d9d2c4;--ink:#24221e;--soft:#625e55;--rule:#bcb3a2;--verm:#ad4b3f;--good:#53664f;--bad:#8f3f35}
+*{box-sizing:border-box}html{background:var(--desk);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}body{margin:0;min-height:100vh;background:var(--desk)}main{max-width:680px;min-height:100vh;margin:0 auto;background:var(--paper);padding:22px 18px 60px}a{color:var(--ink)}.back{text-decoration:none;font-size:12px;font-weight:750;letter-spacing:.05em}h1{font:500 32px/1.05 Georgia,serif;margin:22px 0 7px}.lead{margin:0 0 22px;color:var(--soft)}.card{border-top:1px solid var(--ink);padding:15px 0;margin:16px 0}.label{display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--soft);margin:10px 0 5px}input{width:100%;min-height:46px;border:1px solid var(--rule);background:#fffdf8;padding:10px 11px;font:16px inherit;color:var(--ink)}.row{display:grid;grid-template-columns:1fr;gap:9px;margin-top:15px}button{min-height:48px;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:10px 13px;font-weight:750;cursor:pointer}.primary{background:var(--verm);border-color:#873b32;color:#fffaf1}.status{margin-top:18px;padding:12px;border-left:4px solid var(--rule);background:var(--paper-deep);color:var(--soft)}.status.good{border-color:var(--good);color:#344632}.status.bad{border-color:var(--bad);color:#71372f}.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:12px}.fact{background:var(--paper);padding:11px}.fact strong{display:block;font:24px/1 Georgia,serif}.fact span{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--soft)}.small{font-size:12px;color:var(--soft)}button:disabled{opacity:.5;cursor:wait}@media(min-width:560px){.row{grid-template-columns:1fr 1fr}}
+@media(prefers-color-scheme:dark){:root{--paper:#211f1c;--paper-deep:#2a2722;--desk:#151412;--ink:#eee7db;--soft:#b7afa3;--rule:#514b43;--verm:#bd6254;--good:#8da184;--bad:#d27c70}input{background:#292621;color:var(--ink)}.fact{background:var(--paper)}}
+</style>
+</head>
+<body><main>
+<a class="back" href="./">← STATIONERY LEDGER</a>
+<h1>Phone sync</h1>
+<p class="lead">This APK has its own browser storage. Load your existing private GitHub snapshot onto this phone, or send this phone's current Ledger snapshot back to GitHub.</p>
+
+<div class="facts">
+  <div class="fact"><strong id="localProjects">0</strong><span>Local projects</span></div>
+  <div class="fact"><strong id="localItems">0</strong><span>Local entries</span></div>
+</div>
+
+<section class="card">
+  <label class="label" for="repo">Private repository</label>
+  <input id="repo" value="BigCatMellow/Notes" autocomplete="off">
+  <label class="label" for="branch">Data branch</label>
+  <input id="branch" value="ledger-data" autocomplete="off">
+  <label class="label" for="token">Fine-grained GitHub token</label>
+  <input id="token" type="password" placeholder="github_pat_…" autocomplete="off">
+  <p class="small">The token needs access only to the private Notes repository with <strong>Contents: Read and write</strong>. It is kept in this app session only.</p>
+  <div class="row">
+    <button id="pull" class="primary" type="button">Load from GitHub</button>
+    <button id="push" type="button">Push this phone</button>
+  </div>
+</section>
+
+<div id="status" class="status">Enter your GitHub token, then use <strong>Load from GitHub</strong> on the first run.</div>
+
+<section class="card">
+  <strong>Safe first-run order</strong>
+  <p class="small">1. Load from GitHub. 2. Return to Ledger and confirm your projects are present. 3. After making changes on the phone, come back here and use Push this phone.</p>
+</section>
+</main>
+<script>
+const STORAGE_KEY='ledger-notes-roadmaps-v2';
+const SESSION_KEY='ledger-github-sync-v2';
+const DATA_PATH='data/ledger.json';
+const enc=new TextEncoder();
+let busy=false;
+
+function el(id){return document.getElementById(id)}
+function status(message,kind=''){const s=el('status');s.textContent=message;s.className='status '+kind}
+function config(){return {repo:el('repo').value.trim(),branch:el('branch').value.trim()||'ledger-data',token:el('token').value.trim()}}
+function saveSession(c){sessionStorage.setItem(SESSION_KEY,JSON.stringify(c))}
+function loadSession(){try{const c=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');if(!c)return;el('repo').value=c.repo||'BigCatMellow/Notes';el('branch').value=c.branch||'ledger-data';el('token').value=c.token||''}catch(e){}}
+function setBusy(value){busy=value;el('pull').disabled=value;el('push').disabled=value}
+function renderLocal(){let s={projects:[],items:[]};try{s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}catch(e){}el('localProjects').textContent=Array.isArray(s.projects)?s.projects.length:0;el('localItems').textContent=Array.isArray(s.items)?s.items.length:0;el('push').disabled=busy||!localStorage.getItem(STORAGE_KEY)}
+function bytesToBase64(bytes){let out='';for(let i=0;i<bytes.length;i+=0x8000)out+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(out)}
+function base64ToText(value){const binary=atob(String(value||'').replace(/\s/g,''));const bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return new TextDecoder().decode(bytes)}
+async function github(path,options={}){const c=config();if(!c.repo||!c.token)throw new Error('Enter the repository and GitHub token first.');const headers=Object.assign({'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Authorization':'Bearer '+c.token},options.headers||{});const response=await fetch('https://api.github.com/repos/'+c.repo+'/'+path,Object.assign({cache:'no-store'},options,{headers}));if(!response.ok){let detail='';try{detail=(await response.json()).message||''}catch(e){}const err=new Error('GitHub '+response.status+(detail?': '+detail:''));err.status=response.status;throw err}return response.status===204?null:response.json()}
+async function remoteFile(){const c=config();return github('contents/'+DATA_PATH+'?ref='+encodeURIComponent(c.branch)+'&_ledger='+Date.now())}
+
+async function pull(){if(busy)return;setBusy(true);status('Loading the latest private Ledger snapshot…');try{const c=config();const remote=await remoteFile();const text=base64ToText(remote.content);const state=JSON.parse(text);if(!Array.isArray(state.projects)||!Array.isArray(state.items)||!Array.isArray(state.worklog))throw new Error('The GitHub snapshot is not valid Ledger data.');const existing=localStorage.getItem(STORAGE_KEY);if(existing){let local;try{local=JSON.parse(existing)}catch(e){}const count=Array.isArray(local?.projects)?local.projects.length:0;if(count>0&&!confirm('Replace this phone\'s local Ledger data with the latest GitHub snapshot?')){status('Load cancelled. Nothing was changed.');return}}delete state.syncedAt;localStorage.setItem(STORAGE_KEY,JSON.stringify(state));saveSession(c);renderLocal();status('Loaded successfully. Return to Ledger and your existing projects should be there.','good')}catch(error){status(error.message||String(error),'bad')}finally{setBusy(false);renderLocal()}}
+
+async function push(){if(busy)return;const plain=localStorage.getItem(STORAGE_KEY);if(!plain){status('There is no Ledger data on this phone to push.','bad');return}setBusy(true);status('Sending this phone\'s Ledger snapshot to GitHub…');try{const c=config();const state=JSON.parse(plain);const snapshot=JSON.stringify(Object.assign({},state,{syncedAt:new Date().toISOString()}),null,2)+'\n';let remote=null;try{remote=await remoteFile()}catch(error){if(error.status!==404)throw error}const body={message:'Sync Ledger project data from Android',content:bytesToBase64(enc.encode(snapshot)),branch:c.branch};if(remote?.sha)body.sha=remote.sha;try{await github('contents/'+DATA_PATH,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(error){if(error.status!==409)throw error;const refreshed=await remoteFile();body.sha=refreshed.sha;await github('contents/'+DATA_PATH,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}saveSession(c);status('Phone snapshot pushed successfully.','good')}catch(error){status(error.message||String(error),'bad')}finally{setBusy(false);renderLocal()}}
+
+el('pull').addEventListener('click',pull);el('push').addEventListener('click',push);window.addEventListener('storage',renderLocal);loadSession();renderLocal();
+</script>
+</body></html>
