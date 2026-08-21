@@ -1,0 +1,61 @@
+/* Theme layer for Ledger Stationery. Light mode is the existing clean-paper design. */
+.masthead-actions{display:flex;align-items:flex-start;gap:10px}
+.theme-toggle{
+  width:42px;height:42px;border:1px solid var(--ink);background:var(--paper);
+  color:var(--ink);display:grid;place-items:center;padding:0;margin:0;
+  box-shadow:2px 2px 0 var(--ink);font-size:18px;line-height:1;
+}
+.theme-toggle:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+.theme-toggle .theme-sun{display:none}
+html[data-theme="dark"] .theme-toggle .theme-moon{display:none}
+html[data-theme="dark"] .theme-toggle .theme-sun{display:inline}
+
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#25231f;
+  --paper-deep:#302c26;
+  --desk:#181715;
+  --ink:#f1eadf;
+  --ink-soft:#b9b1a6;
+  --rule:#4e493f;
+  --rule-dark:#6c6458;
+  --verm:#cf6b5c;
+  --verm-dark:#e58a7b;
+  --blue:#93abb5;
+  --shadow:rgba(0,0,0,.34);
+}
+html[data-theme="dark"],html[data-theme="dark"] body{background:var(--desk);color:var(--ink)}
+html[data-theme="dark"] .desk{background:var(--paper);box-shadow:0 0 40px var(--shadow)}
+html[data-theme="dark"] .masthead{border-color:var(--rule-dark)}
+html[data-theme="dark"] .date-block{background:#2e2a24;box-shadow:2px 2px 0 #0f0e0c}
+html[data-theme="dark"] .theme-toggle{background:#2e2a24;box-shadow:2px 2px 0 #0f0e0c}
+html[data-theme="dark"] .project-strip-wrap{background:var(--paper-deep)}
+html[data-theme="dark"] .project-tab{background:#39342c;color:#c6bdb1;border-color:var(--rule-dark)}
+html[data-theme="dark"] .project-tab.active{background:var(--paper);color:var(--ink);border-color:var(--ink)}
+html[data-theme="dark"] .paper{background:var(--paper)!important}
+html[data-theme="dark"] .quiet-button{background:#302c26;border-color:var(--rule-dark)}
+html[data-theme="dark"] .stamp{background:rgba(255,255,255,.025)}
+html[data-theme="dark"] .stamp.open{color:#a6c0cb}
+html[data-theme="dark"] .stamp.done{color:#a8b396}
+html[data-theme="dark"] .stamp.blocked{color:#e37f72}
+html[data-theme="dark"] .entry:active,html[data-theme="dark"] .memo-card:active{background:rgba(207,107,92,.07)}
+html[data-theme="dark"] .empty-number{color:#514b41}
+html[data-theme="dark"] .roadmap-summary{background:rgba(255,255,255,.025)}
+html[data-theme="dark"] .bottom-ruler{background:#131210;color:#f1eadf;border-top-color:var(--verm);box-shadow:0 -7px 22px rgba(0,0,0,.3)}
+html[data-theme="dark"] .bottom-ruler .capture-nav{background:#2d2923;color:#fff7ec}
+html[data-theme="dark"] .sheet-backdrop{background:rgba(0,0,0,.62)}
+html[data-theme="dark"] .sheet{background:var(--paper)!important;border-color:var(--rule-dark);box-shadow:0 -12px 40px rgba(0,0,0,.45)}
+html[data-theme="dark"] .sheet-close{background:#302c26;border-color:var(--rule-dark)}
+html[data-theme="dark"] .paper-button{background:#302c26;border-color:var(--rule-dark);color:var(--ink)}
+html[data-theme="dark"] .paper-button.primary{background:#a94f43;border-color:#d26e5e;color:#fff8ef;box-shadow:2px 2px 0 #6e3029}
+html[data-theme="dark"] .segmented{border-color:var(--rule-dark)}
+html[data-theme="dark"] .segmented button{background:#302c26;border-color:var(--rule-dark);color:var(--ink-soft)}
+html[data-theme="dark"] .segmented button.selected{background:#eee5d8;color:#211f1b}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field textarea,html[data-theme="dark"] .ruled-field textarea{background:#1d1b18!important;color:var(--ink);border-color:var(--rule-dark)}
+html[data-theme="dark"] .field input::placeholder,html[data-theme="dark"] .field textarea::placeholder{color:#81796e}
+html[data-theme="dark"] .status-actions button{background:#302c26;color:var(--ink-soft);border-color:var(--rule-dark)}
+html[data-theme="dark"] .status-actions button.selected{color:#f09a8b;border-color:var(--verm)}
+html[data-theme="dark"] .tool-row{color:var(--ink)}
+html[data-theme="dark"] .history-date{border-color:var(--rule-dark)}
+
+@media(min-width:720px){html[data-theme="dark"] .desk{border-color:#4d473e}}
