@@ -6,9 +6,9 @@
 <meta name="theme-color" content="#191814">
 <title>Ledger</title>
 <style>html,body{margin:0;background:#efece5;color:#191814;font:16px system-ui,sans-serif}main{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.err{max-width:640px;background:#fffdf8;border:1px solid #ddd7cc;border-radius:14px;padding:20px}small{color:#6f6a60}</style>
-<script src="./assets/appfix-1.js"></script>
-<script src="./assets/appfix-2.js"></script>
-<script src="./assets/app-2.js"></script>
+<script src="./assets/appmodal-1.js"></script>
+<script src="./assets/appmodal-2.js"></script>
+<script src="./assets/appmodal-3.js"></script>
 <script src="./assets/support-1.js"></script>
 <script src="./assets/support-2.js"></script>
 <script src="./assets/supportfix-1.js"></script>
@@ -38,9 +38,7 @@ async function gunzipBase64(parts){
     const supportUrl=URL.createObjectURL(new Blob([support],{type:'text/javascript'}));
     const marker='<script src="./support.js"><\/script>';
     if(!appHtml.includes(marker)) throw new Error('Ledger application bootstrap marker was not found.');
-    let hydrated=appHtml.replace(marker,'<script src="'+supportUrl+'"><\/script>');
-    hydrated=hydrated.replace('</head>','<link rel="stylesheet" href="./assets/mobile-ui.css?v=20260820-1"></head>');
-    hydrated=hydrated.replace('</body>','<script src="./assets/mobile-ui.js?v=20260820-1"><\/script></body>');
+    const hydrated=appHtml.replace(marker,'<script src="'+supportUrl+'"><\/script>');
     document.open(); document.write(hydrated); document.close();
   }catch(error){
     console.error('Ledger bootstrap error:',error);
