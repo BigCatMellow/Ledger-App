@@ -1,0 +1,22 @@
+/* Clean-paper override: preserve the stationery language without notebook ruling/grid clutter. */
+body{
+  background:var(--desk) !important;
+}
+
+.desk:before{
+  display:none !important;
+}
+
+.paper{
+  background:var(--paper) !important;
+}
+
+.sheet{
+  background:var(--paper) !important;
+}
+
+.ruled-field textarea{
+  background:rgba(255,255,255,.48) !important;
+  line-height:1.45 !important;
+  padding:10px 11px !important;
+}
