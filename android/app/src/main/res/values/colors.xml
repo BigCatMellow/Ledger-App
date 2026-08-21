@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ledger_paper">#F2EEE3</color>
+    <color name="ledger_dark">#181715</color>
+    <color name="ledger_ink">#24221E</color>
+    <color name="ledger_vermilion">#AD4B3F</color>
+    <color name="ledger_icon_background">#F2EEE3</color>
+</resources>
