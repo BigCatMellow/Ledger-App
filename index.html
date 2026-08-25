@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="./roadmap-help.css?v=1">
   <link rel="stylesheet" href="./typography.css?v=1">
   <link rel="stylesheet" href="./project-links.css?v=1">
+  <link rel="stylesheet" href="./sync-status.css?v=1">
 </head>
 <body>
   <div class="desk">
@@ -50,6 +51,14 @@
       <div id="projectTabs" class="project-tabs" aria-label="Projects"></div>
       <button id="newProjectTop" class="index-add" type="button" aria-label="New project">＋</button>
     </div>
+
+    <aside id="syncNudge" class="sync-nudge" hidden aria-live="polite">
+      <span id="syncNudgeText"></span>
+      <span class="sync-nudge-actions">
+        <a href="../sync.html">Open Sync</a>
+        <a href="https://github.com/BigCatMellow/Ledger-App/blob/main/docs/wiki/Set-Up-Your-Notes-Repository.md" target="_blank" rel="noopener noreferrer">How to Sync</a>
+      </span>
+    </aside>
 
     <main id="app" class="paper" aria-live="polite">
       <section id="emptyState" class="empty-state" hidden>
@@ -273,5 +282,6 @@
   <script src="./theme.js?v=2"></script>
   <script src="./journal.js?v=2"></script>
   <script src="./roadmap-help.js?v=1"></script>
+  <script src="./sync-status.js?v=1"></script>
 </body>
 </html>
