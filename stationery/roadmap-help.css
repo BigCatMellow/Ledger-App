@@ -1,0 +1,142 @@
+/* Roadmap field guidance: compact help affordances and a focused modal over the project editor. */
+.roadmap-field{
+  margin:13px 0;
+}
+
+.roadmap-field-label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:5px;
+  color:var(--ink-soft);
+}
+
+.roadmap-field-label label{
+  font-size:10px;
+  line-height:1.2;
+  letter-spacing:.035em;
+  font-weight:800;
+}
+
+.roadmap-help-button{
+  width:24px;
+  height:24px;
+  flex:0 0 24px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--rule-dark);
+  border-radius:50%;
+  background:var(--paper-deep);
+  color:var(--ink-soft);
+  padding:0;
+  font:800 12px/1 Georgia,serif;
+}
+
+.roadmap-help-button:focus-visible,
+.roadmap-help-close:focus-visible{
+  outline:2px solid var(--verm);
+  outline-offset:2px;
+}
+
+.roadmap-help-backdrop{
+  position:fixed;
+  z-index:70;
+  inset:0;
+  background:rgba(31,28,24,.54);
+  backdrop-filter:blur(2px);
+}
+
+.roadmap-help-modal{
+  position:fixed;
+  z-index:71;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(calc(100% - 32px),520px);
+  max-height:calc(100vh - 32px);
+  overflow:auto;
+  border:1px solid var(--ink);
+  border-radius:16px;
+  background:var(--paper);
+  color:var(--ink);
+  padding:18px 18px 20px;
+  box-shadow:0 18px 55px rgba(31,28,24,.28);
+}
+
+.roadmap-help-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  padding-bottom:11px;
+  border-bottom:1px solid var(--rule-dark);
+}
+
+.roadmap-help-kicker{
+  margin-bottom:4px;
+  color:var(--verm-dark);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.roadmap-help-head h2{
+  margin:0;
+  font:500 27px/1.08 "Iowan Old Style","Palatino Linotype","Yu Mincho",Georgia,serif;
+  letter-spacing:-.02em;
+}
+
+.roadmap-help-close{
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  border:1px solid var(--rule-dark);
+  border-radius:50%;
+  background:var(--paper-deep);
+  color:var(--ink);
+  padding:0;
+  font-size:22px;
+  line-height:1;
+}
+
+.roadmap-help-definition{
+  margin:15px 1px 0;
+  font-size:14px;
+  line-height:1.55;
+}
+
+.roadmap-help-block{
+  margin-top:13px;
+  border:1px solid var(--rule);
+  border-radius:10px;
+  background:var(--paper-deep);
+  padding:11px 12px 12px;
+}
+
+.roadmap-help-block strong{
+  display:block;
+  margin-bottom:4px;
+  color:var(--verm-dark);
+  font-size:10px;
+  letter-spacing:.055em;
+}
+
+.roadmap-help-block p{
+  margin:0;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.roadmap-help-example{
+  font-family:"Iowan Old Style","Palatino Linotype","Yu Mincho",Georgia,serif;
+  font-size:14px !important;
+}
+
+@media(hover:hover) and (pointer:fine){
+  .roadmap-help-button:hover,
+  .roadmap-help-close:hover{
+    border-color:var(--ink);
+    color:var(--ink);
+  }
+}
