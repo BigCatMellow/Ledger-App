@@ -1,0 +1,46 @@
+/* Mobile project navigation: show one active project and use the existing Projects sheet as the switcher. */
+@media(max-width:719px){
+  .project-strip-wrap .strip-label{
+    font-size:0;
+  }
+  .project-strip-wrap .strip-label::after{
+    content:"CURRENT PROJECT";
+    font-size:11px;
+    line-height:1.35;
+    letter-spacing:.11em;
+  }
+
+  .project-tabs{
+    overflow:hidden;
+  }
+
+  .project-tab{
+    display:none;
+  }
+
+  .project-tab.active{
+    display:block;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    padding-right:36px;
+    text-align:left;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    cursor:pointer;
+  }
+
+  .project-tab.active::before{
+    content:"⌄";
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-54%);
+    font-size:17px;
+    line-height:1;
+    font-weight:600;
+    color:var(--ink-soft);
+    pointer-events:none;
+  }
+}
