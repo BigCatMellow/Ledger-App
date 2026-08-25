@@ -23,6 +23,29 @@
     return b64(d);
   }
 
+  async function matchesSavedSnapshot(plain,savedHash){
+    const currentHash=await sha256Text(plain);
+    if(currentHash===savedHash)return {matches:true,currentHash};
+
+    // activeProject is UI navigation state, not project content. Switching tabs
+    // should not make an otherwise identical GitHub snapshot look out of date.
+    let state;
+    try{state=JSON.parse(plain)}catch(e){return {matches:false,currentHash}}
+    if(!state||typeof state!=='object'||Array.isArray(state))return {matches:false,currentHash};
+
+    const original=state.activeProject;
+    const ids=Array.isArray(state.projects)?state.projects.map(p=>p?.id).filter(Boolean):[];
+    const candidates=[...new Set(['',original,...ids])];
+    for(const id of candidates){
+      if(id===original)continue;
+      state.activeProject=id;
+      if(await sha256Text(JSON.stringify(state))===savedHash){
+        return {matches:true,currentHash,uiOnly:true};
+      }
+    }
+    return {matches:false,currentHash};
+  }
+
   function show(message){
     const box=document.getElementById('syncNudge');
     const text=document.getElementById('syncNudgeText');
@@ -48,12 +71,17 @@
     }
 
     try{
-      const hash=await sha256Text(plain);
+      const result=await matchesSavedSnapshot(plain,status.hash);
       if(token!==refreshToken)return;
-      if(hash!==status.hash){
-        show('<strong>Changes not synced.</strong> Your browser has newer Ledger data than the last GitHub snapshot.');
-      }else{
+      if(result.matches){
+        // Rebase the local marker when the only difference was active-project
+        // selection. Keep the original successful-sync timestamp unchanged.
+        if(result.uiOnly&&result.currentHash){
+          localStorage.setItem(SYNC_STATUS_KEY,JSON.stringify({...status,hash:result.currentHash}));
+        }
         hide();
+      }else{
+        show('<strong>Changes not synced.</strong> Your browser has newer Ledger data than the last GitHub snapshot.');
       }
     }catch(e){
       // If hashing is unavailable, avoid showing a potentially incorrect warning.
