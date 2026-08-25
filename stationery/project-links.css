@@ -70,7 +70,7 @@
     width:100%;
     max-width:100%;
     min-width:0;
-    padding-right:36px;
+    padding-right:116px;
     text-align:left;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -78,15 +78,21 @@
     cursor:pointer;
   }
   .project-tab.active::before{
-    content:"⌄";
+    content:"All Projects";
     position:absolute;
-    right:12px;
-    top:50%;
-    transform:translateY(-54%);
-    font-size:17px;
+    right:0;
+    top:2px;
+    bottom:0;
+    width:104px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-left:1px solid var(--rule-dark);
+    color:var(--verm-dark);
+    font-size:11px;
     line-height:1;
-    font-weight:600;
-    color:var(--ink-soft);
+    font-weight:750;
+    letter-spacing:.02em;
     pointer-events:none;
   }
 
