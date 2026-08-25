@@ -41,6 +41,65 @@
     state.worklog.unshift({id:uid('w'),p,itemId,whenAt:now(),summary});
   }
   function esc(s){ return String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+  function safeHttpUrl(value){
+    const raw=String(value||'').trim();
+    if(!raw)return '';
+    const candidate=/^https?:\/\//i.test(raw)?raw:`https://${raw}`;
+    try{
+      const url=new URL(candidate);
+      return (url.protocol==='http:'||url.protocol==='https:')?url.href:'';
+    }catch(e){
+      return '';
+    }
+  }
+  function normalizeProjectLinks(links){
+    if(!Array.isArray(links))return [];
+    const seen=new Set();
+    return links.map(link=>typeof link==='string'?{label:'',url:link}:link||{}).map(link=>({
+      label:String(link.label||'').trim(),
+      url:safeHttpUrl(link.url||'')
+    })).filter(link=>{
+      if(!link.url||seen.has(link.url))return false;
+      seen.add(link.url);
+      return true;
+    });
+  }
+  function parseProjectLinks(value){
+    const seen=new Set();
+    return String(value||'').split('\n').map(line=>line.trim()).filter(Boolean).map(line=>{
+      const divider=line.indexOf('|');
+      const label=divider>=0?line.slice(0,divider).trim():'';
+      const rawUrl=divider>=0?line.slice(divider+1).trim():line;
+      return {label,url:safeHttpUrl(rawUrl)};
+    }).filter(link=>{
+      if(!link.url||seen.has(link.url))return false;
+      seen.add(link.url);
+      return true;
+    });
+  }
+  function projectLinksText(links){
+    return normalizeProjectLinks(links).map(link=>link.label?`${link.label} | ${link.url}`:link.url).join('\n');
+  }
+  function projectLinkLabel(link){
+    if(link.label)return link.label;
+    try{
+      const url=new URL(link.url);
+      const host=url.hostname.replace(/^www\./,'');
+      const parts=url.pathname.split('/').filter(Boolean);
+      if(host==='github.com'&&parts.length>=2)return `GitHub · ${parts[0]}/${parts[1]}`;
+      return host||link.url;
+    }catch(e){
+      return link.url;
+    }
+  }
+  function renderProjectLinks(p){
+    const box=$('projectLinks');
+    if(!box)return;
+    const links=normalizeProjectLinks(p?.links);
+    if(!links.length){box.hidden=true;box.innerHTML='';return;}
+    box.innerHTML=links.map(link=>`<a class="project-link" href="${esc(link.url)}" target="_blank" rel="noopener noreferrer"><span>${esc(projectLinkLabel(link))}</span><span class="project-link-arrow" aria-hidden="true">↗</span></a>`).join('');
+    box.hidden=false;
+  }
   function dateParts(value){
     const d = value ? new Date(value) : new Date();
     if (Number.isNaN(d.getTime())) return {day:'--',mon:'---',long:'Unknown date'};
@@ -77,6 +136,7 @@
     $('projectMode').textContent = p.mode === 'ROADMAP' ? 'ROADMAP' : 'LIST';
     $('projectDescription').textContent = p.description || '';
     $('projectDescription').hidden = !p.description;
+    renderProjectLinks(p);
 
     const mine = state.items.filter(i=>i.p===p.id);
     const tasks = mine.filter(i=>i.kind!=='NOTE');
@@ -183,7 +243,7 @@
   function openProjectEditor(id){
     const p=id?state.projects.find(x=>x.id===id):null;
     $('projectSheetTitle').textContent=p?'Edit project':'New project';
-    $('projectId').value=p?.id||''; $('projectTitleInput').value=p?.title||''; $('projectDescriptionInput').value=p?.description||'';
+    $('projectId').value=p?.id||''; $('projectTitleInput').value=p?.title||''; $('projectDescriptionInput').value=p?.description||''; $('projectLinksInput').value=projectLinksText(p?.links);
     projectMode=p?.mode||'LIST'; setMode(projectMode);
     const f=p?.framing||{};
     $('framingCurrent').value=f.currentReality||''; $('framingDone').value=f.done||''; $('framingProof').value=f.proof||''; $('framingScope').value=f.inScope||'';
@@ -197,8 +257,8 @@
   }
   function saveProject(e){
     e.preventDefault(); const id=$('projectId').value; let p=id?state.projects.find(x=>x.id===id):null; const t=now();
-    if(!p){p={id:uid('p'),createdAt:t,workedAt:t,framing:{}};state.projects.push(p);state.activeProject=p.id;}
-    p.title=$('projectTitleInput').value.trim()||'Untitled project'; p.description=$('projectDescriptionInput').value.trim(); p.mode=projectMode; p.workedAt=t;
+    if(!p){p={id:uid('p'),createdAt:t,workedAt:t,framing:{},links:[]};state.projects.push(p);state.activeProject=p.id;}
+    p.title=$('projectTitleInput').value.trim()||'Untitled project'; p.description=$('projectDescriptionInput').value.trim(); p.links=parseProjectLinks($('projectLinksInput').value); p.mode=projectMode; p.workedAt=t;
     p.framing={currentReality:$('framingCurrent').value.trim(),done:$('framingDone').value.trim(),proof:$('framingProof').value.trim(),inScope:$('framingScope').value.trim(),notDoing:$('framingNotDoing').value.trim(),effortLimit:$('framingEffort').value.trim(),risk:$('framingRisk').value.trim()};
     log(id?`Project updated: ${p.title}`:`Project created: ${p.title}`,'',p.id); persist(); closeSheets();
   }
@@ -206,7 +266,7 @@
   function openProjectMenu(){
     const p=activeProject(); if(!p)return;
     $('projectList').innerHTML=`
-      <button type="button" data-action="edit-current-project"><span>Edit project<small>Title, description, roadmap framing</small></span><span>→</span></button>
+      <button type="button" data-action="edit-current-project"><span>Edit project<small>Title, description, links, roadmap framing</small></span><span>→</span></button>
       <button type="button" data-action="log-work"><span>Log work session<small>Record activity without changing a task</small></span><span>＋</span></button>
       <button type="button" data-action="toggle-roadmap"><span>${p.mode==='ROADMAP'?'Use list format':'Turn into roadmap'}<small>Keep the same project and entries</small></span><span>↔</span></button>`;
     $('projectsSheetTitle').textContent='Project';
@@ -249,8 +309,13 @@
     const p=activeProject(); if(!p)return;
     const mine=state.items.filter(i=>i.p===p.id); const f=p.framing||{}; const out=[`# ${p.title}`];
     if(p.description) out.push('',p.description);
+    const links=normalizeProjectLinks(p.links);
+    if(links.length){
+      out.push('','## Links');
+      links.forEach(link=>out.push(link.label?`- [${link.label}](${link.url})`:`- <${link.url}>`));
+    }
     if(p.mode==='ROADMAP'){
-      const fields=[['Current reality',f.currentReality],['Definition of DONE',f.done],['Final proof',f.proof],['In scope',f.inScope],['Not doing',f.notDoing],['Effort limit',f.effortLimit],['Highest-risk unknown',f.risk]];
+      const fields=[['Current Reality',f.currentReality],['Definition of Done',f.done],['Final Proof',f.proof],['In Scope',f.inScope],['Not Doing',f.notDoing],['Effort Limit',f.effortLimit],['Highest-Risk Unknown',f.risk]];
       fields.forEach(([h,v])=>{if(v)out.push('',`## ${h}`,v);});
     }
     const phases=[...new Set(mine.map(i=>i.phase||'').filter(Boolean))];
@@ -261,7 +326,7 @@
   }
   function importMarkdown(text,name){
     const lines=text.replace(/\r/g,'').split('\n'); const titleLine=lines.find(l=>/^#\s+/.test(l)); const title=(titleLine?titleLine.replace(/^#\s+/,'').trim():name.replace(/\.md$/i,''))||'Imported project'; const t=now();
-    const p={id:uid('p'),title,description:'',mode:'LIST',workedAt:t,createdAt:t,framing:{currentReality:'',done:'',proof:'',inScope:'',notDoing:'',effortLimit:'',risk:''}}; state.projects.push(p); state.activeProject=p.id;
+    const p={id:uid('p'),title,description:'',links:[],mode:'LIST',workedAt:t,createdAt:t,framing:{currentReality:'',done:'',proof:'',inScope:'',notDoing:'',effortLimit:'',risk:''}}; state.projects.push(p); state.activeProject=p.id;
     let phase=''; let paragraph=[]; const flush=()=>{const body=paragraph.join(' ').trim(); if(body){const id=uid('i');state.items.push({id,p:p.id,kind:'NOTE',status:'OPEN',phase,title:body,workedAt:t,createdAt:t,notes:'',outcome:'',inputs:'',acceptance:'',dependencies:'',boundary:'',verification:'',stopCondition:''});log(`Captured: ${body}`,id,p.id);} paragraph=[];};
     for(const line of lines){
       if(/^#\s+/.test(line))continue;
