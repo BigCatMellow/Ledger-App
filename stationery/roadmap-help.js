@@ -85,4 +85,15 @@
     event.stopImmediatePropagation();
     closeHelp();
   }, true);
+
+  // Mobile uses the active project tab as a selector. Reuse Ledger's existing Projects sheet.
+  const mobileProjectSelector = window.matchMedia('(max-width: 719px)');
+  document.addEventListener('click', event => {
+    if(!mobileProjectSelector.matches) return;
+    const activeTab = event.target.closest('.project-tab.active[data-project]');
+    if(!activeTab) return;
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelector('.bottom-ruler [data-action="projects"]')?.click();
+  }, true);
 })();
