@@ -113,6 +113,18 @@ ledger-data
 
 Paste the token you created above.
 
+### Optional: remember this connection
+
+On a trusted personal device, you can turn on:
+
+**Remember GitHub connection on this device**
+
+When enabled, Ledger stores the repository, branch, and token in that browser's local storage so the connection survives closing and reopening the browser. Reopening the sync page restores the connection and automatic syncing resumes.
+
+Leave this option off on a shared, public, or otherwise untrusted device. Without it, the token remains session-only and is removed when the browser session ends.
+
+The remembered token is never written into your Notes repository, but browser local storage is not a password vault, so anyone with access to that browser profile could potentially retrieve it.
+
 Then choose:
 
 **Connect & sync now**
@@ -145,11 +157,13 @@ The GitHub sync page is intentionally separate from the main Ledger page.
 
 After you connect it:
 
-- The token is kept in browser **session storage**, not in the repository.
-- Leave the GitHub sync tab open while using Ledger if you want changes to be pushed automatically during that browser session.
+- By default, the token is kept in browser **session storage**, not in the repository.
+- If **Remember GitHub connection on this device** is enabled, the connection is stored in browser **local storage** until you turn that option off or clear the site's browser data.
+- Reopening the sync page with a remembered connection restores the token and resumes syncing automatically.
+- Leave the GitHub sync tab open while using Ledger if you want changes to be pushed automatically while you work.
 - Ledger changes trigger a short delayed sync rather than creating a GitHub request for every keystroke.
 - The sync page also periodically checks for changes while it remains open.
-- Closing the browser session removes the stored token, so you may need to paste it again later.
+- If the tab is closed, GitHub keeps the most recent snapshot that successfully reached the repository.
 
 ## What GitHub Sync Does Not Do Yet
 
@@ -206,6 +220,7 @@ Before considering setup complete, confirm:
 - [ ] Fine-grained token is restricted to only the Notes repository
 - [ ] Token permission is only what Ledger needs: **Contents: Read and write**
 - [ ] Token is not saved in source control
+- [ ] Remembered connection is enabled only on a trusted personal device
 - [ ] `data/ledger.json` is visible only inside the private repository
 
 If sync does not work, see [Notes Sync Troubleshooting](./Notes-Sync-Troubleshooting.md).
