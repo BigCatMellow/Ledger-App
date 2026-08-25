@@ -15,15 +15,16 @@
       }
     }catch(e){document.documentElement.dataset.theme='light'}
   </script>
-  <link rel="stylesheet" href="./stationery.css?v=1">
-  <link rel="stylesheet" href="./clean-paper.css?v=1">
-  <link rel="stylesheet" href="./theme.css?v=1">
+  <link rel="stylesheet" href="./stationery.css?v=2">
+  <link rel="stylesheet" href="./clean-paper.css?v=2">
+  <link rel="stylesheet" href="./theme.css?v=2">
+  <link rel="stylesheet" href="./journal.css?v=1">
 </head>
 <body>
   <div class="desk">
     <header class="masthead">
       <div>
-        <div class="eyebrow">NOTES · ROADMAPS · WORK LOG</div>
+        <div class="eyebrow">NOTES · ROADMAPS · JOURNAL · WORK LOG</div>
         <h1>Ledger</h1>
       </div>
       <div class="masthead-actions">
@@ -84,6 +85,17 @@
           <div id="noteItems" class="memo-list"></div>
         </div>
 
+        <div id="journalSection" class="journal-section">
+          <div class="section-rule journal-rule">
+            <span>JOURNAL</span>
+            <span class="journal-rule-actions">
+              <span id="journalCount" class="section-note">0</span>
+              <button class="journal-add" data-journal-new type="button">＋ Thought</button>
+            </span>
+          </div>
+          <div id="journalItems" class="journal-list"></div>
+        </div>
+
         <details id="doneSection" class="done-section">
           <summary><span>ARCHIVE / DONE</span><span id="doneCount"></span></summary>
           <div id="doneItems" class="entry-list done-list"></div>
@@ -128,6 +140,19 @@
         <label class="field"><span>Done when</span><textarea id="captureAcceptance" rows="2"></textarea></label>
       </div>
       <button class="paper-button primary full" type="submit">Save to Ledger →</button>
+    </form>
+  </section>
+
+  <section id="journalSheet" class="sheet journal-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="journalSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">PROJECT JOURNAL</div><h2 id="journalSheetTitle">New thought</h2></div><button class="sheet-close" data-close-journal type="button">×</button></div>
+    <form id="journalForm">
+      <input id="journalId" type="hidden">
+      <label class="field"><span>Thought</span><textarea id="journalBody" rows="8" required placeholder="Idea, question, observation, decision…"></textarea></label>
+      <div class="journal-sheet-actions">
+        <button id="journalDelete" class="paper-button journal-delete" type="button" hidden>Delete</button>
+        <button class="paper-button primary full" type="submit">Save thought</button>
+      </div>
     </form>
   </section>
 
@@ -192,7 +217,8 @@
     </form>
   </section>
 
-  <script src="./stationery.js?v=1"></script>
-  <script src="./theme.js?v=1"></script>
+  <script src="./stationery.js?v=2"></script>
+  <script src="./theme.js?v=2"></script>
+  <script src="./journal.js?v=1"></script>
 </body>
 </html>
