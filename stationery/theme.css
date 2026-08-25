@@ -165,6 +165,47 @@ html[data-theme="dark"] .history-date{border-color:var(--rule-dark)}
   border-radius:var(--radius-panel) var(--radius-panel) 0 0;
 }
 
+/* Sheet headers use the same visual language as the persistent bottom toolbar. */
+.sheet-handle{
+  position:relative;
+  z-index:2;
+  background:var(--verm);
+}
+.sheet-head{
+  margin:-26px -18px 14px;
+  padding:27px 18px 11px;
+  background:#292824;
+  color:#f4f4f1;
+  border-bottom:3px solid var(--verm);
+  border-radius:calc(var(--radius-panel) - 1px) calc(var(--radius-panel) - 1px) 0 0;
+}
+.sheet-head h2{
+  color:#f4f4f1;
+}
+.sheet-head .sheet-label{
+  color:#c8c4bc;
+}
+.sheet .sheet-head .sheet-close{
+  background:#383632;
+  color:#f4f4f1;
+  border-color:#5b5852;
+}
+html[data-theme="dark"] .sheet-head{
+  background:#131210;
+  color:#f1eadf;
+}
+html[data-theme="dark"] .sheet-head h2{
+  color:#f1eadf;
+}
+html[data-theme="dark"] .sheet-head .sheet-label{
+  color:#b9b1a6;
+}
+html[data-theme="dark"] .sheet .sheet-head .sheet-close{
+  background:#2d2923;
+  color:#fff7ec;
+  border-color:#5b5449;
+}
+
 /* Use the tab's real top border so the accent follows the rounded corners exactly. */
 .project-tab.active{
   border-top:2px solid var(--verm);
