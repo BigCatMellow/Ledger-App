@@ -104,17 +104,12 @@ html[data-theme="dark"] .history-date{border-color:var(--rule-dark)}
   border-radius:var(--radius-panel) var(--radius-panel) 0 0;
 }
 
-/* Carry the active project accent around the rounded top corners. */
+/* Use the tab's real top border so the accent follows the rounded corners exactly. */
+.project-tab.active{
+  border-top:2px solid var(--verm);
+}
 .project-tab.active:after{
-  left:-1px;
-  right:-1px;
-  top:-1px;
-  height:9px;
-  background:transparent;
-  border:2px solid var(--verm);
-  border-bottom:0;
-  border-radius:8px 8px 0 0;
-  pointer-events:none;
+  content:none;
 }
 
 @media(min-width:720px){
