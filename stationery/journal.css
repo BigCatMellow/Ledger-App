@@ -16,8 +16,7 @@
   padding:4px 9px;
   font-size:9px;
   font-weight:800;
-  letter-spacing:.08em;
-  text-transform:uppercase;
+  letter-spacing:.04em;
 }
 .journal-add:active{
   transform:translateY(1px);
