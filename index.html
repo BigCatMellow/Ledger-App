@@ -4,13 +4,195 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f2eee3">
+  <meta name="color-scheme" content="light dark">
   <title>Ledger</title>
-  <meta http-equiv="refresh" content="0; url=./stationery/">
+  <base href="./stationery/">
   <script>
-    location.replace('./stationery/' + location.search + location.hash);
+    try{
+      document.documentElement.dataset.theme = localStorage.getItem('ledger-stationery-theme-v1') === 'dark' ? 'dark' : 'light';
+      if(document.documentElement.dataset.theme === 'dark'){
+        document.querySelector('meta[name="theme-color"]').setAttribute('content','#181715');
+      }
+    }catch(e){document.documentElement.dataset.theme='light'}
   </script>
+  <link rel="stylesheet" href="./stationery.css?v=1">
+  <link rel="stylesheet" href="./clean-paper.css?v=1">
+  <link rel="stylesheet" href="./theme.css?v=1">
 </head>
 <body>
-  <p><a href="./stationery/">Open Ledger</a></p>
+  <div class="desk">
+    <header class="masthead">
+      <div>
+        <div class="eyebrow">NOTES · ROADMAPS · WORK LOG</div>
+        <h1>Ledger</h1>
+      </div>
+      <div class="masthead-actions">
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Dark mode">
+          <span class="theme-moon" aria-hidden="true">☾</span>
+          <span class="theme-sun" aria-hidden="true">☀</span>
+        </button>
+        <div class="date-block" aria-label="Today's date">
+          <span id="todayDay">21</span>
+          <span id="todayMonth">AUG</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="project-strip-wrap">
+      <div class="strip-label">PROJECT INDEX</div>
+      <div id="projectTabs" class="project-tabs" aria-label="Projects"></div>
+      <button id="newProjectTop" class="index-add" type="button" aria-label="New project">＋</button>
+    </div>
+
+    <main id="app" class="paper" aria-live="polite">
+      <section id="emptyState" class="empty-state" hidden>
+        <div class="empty-number">00</div>
+        <h2>No notebook yet</h2>
+        <p>Create a project to begin writing.</p>
+        <button class="paper-button primary" data-action="new-project" type="button">Create project</button>
+      </section>
+
+      <section id="projectView" hidden>
+        <div class="project-heading">
+          <div>
+            <div id="projectMode" class="project-kicker">LIST</div>
+            <h2 id="projectTitle"></h2>
+            <p id="projectDescription" class="project-description"></p>
+          </div>
+          <button class="quiet-button" data-action="project-menu" type="button" aria-label="Project options">•••</button>
+        </div>
+
+        <section id="roadmapSummary" class="roadmap-summary" hidden></section>
+
+        <div class="section-rule">
+          <span>NOW</span>
+          <span id="projectProgress" class="section-note"></span>
+        </div>
+        <div id="activeItems" class="entry-list"></div>
+
+        <div class="section-rule">
+          <span>NEXT / OPEN</span>
+          <span id="openCount" class="section-note"></span>
+        </div>
+        <div id="openItems" class="entry-list"></div>
+
+        <div id="notesSection">
+          <div class="section-rule">
+            <span>NOTES</span>
+            <span id="noteCount" class="section-note"></span>
+          </div>
+          <div id="noteItems" class="memo-list"></div>
+        </div>
+
+        <details id="doneSection" class="done-section">
+          <summary><span>ARCHIVE / DONE</span><span id="doneCount"></span></summary>
+          <div id="doneItems" class="entry-list done-list"></div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-ruler" aria-label="Ledger navigation">
+    <button data-action="projects" type="button"><span class="nav-mark">▥</span><span>Projects</span></button>
+    <button class="capture-nav" data-action="capture" type="button"><span class="nav-mark">＋</span><span>Capture</span></button>
+    <button data-action="history" type="button"><span class="nav-mark">◷</span><span>History</span></button>
+    <button data-action="tools" type="button"><span class="nav-mark">⌁</span><span>Tools</span></button>
+  </nav>
+
+  <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+
+  <section id="projectsSheet" class="sheet" hidden aria-modal="true" role="dialog" aria-labelledby="projectsSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">INDEX</div><h2 id="projectsSheetTitle">Projects</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <div id="projectList" class="project-list"></div>
+    <button class="paper-button primary full" data-action="new-project" type="button">＋ New project</button>
+  </section>
+
+  <section id="captureSheet" class="sheet capture-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="captureSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">MEMO</div><h2 id="captureSheetTitle">Capture</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <form id="captureForm">
+      <div class="segmented" role="group" aria-label="Capture type">
+        <button type="button" data-kind="NOTE" class="selected">Note</button>
+        <button type="button" data-kind="CHECKLIST">Task</button>
+        <button type="button" data-kind="EXECUTION">Structured</button>
+      </div>
+      <label class="field ruled-field"><span>Title / note</span><textarea id="captureTitle" rows="4" required placeholder="Write it down…"></textarea></label>
+      <div id="captureTaskFields" hidden>
+        <label class="field"><span>Section / phase</span><input id="capturePhase" type="text" placeholder="Optional"></label>
+      </div>
+      <div id="captureExecutionFields" hidden>
+        <label class="field"><span>Outcome</span><textarea id="captureOutcome" rows="2"></textarea></label>
+        <label class="field"><span>Input / source</span><textarea id="captureInputs" rows="2"></textarea></label>
+        <label class="field"><span>Waiting on / dependencies</span><textarea id="captureDependencies" rows="2"></textarea></label>
+        <label class="field"><span>Done when</span><textarea id="captureAcceptance" rows="2"></textarea></label>
+      </div>
+      <button class="paper-button primary full" type="submit">Save to Ledger →</button>
+    </form>
+  </section>
+
+  <section id="historySheet" class="sheet tall-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="historySheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">WORK LOG</div><h2 id="historySheetTitle">History</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <div id="historyList" class="history-list"></div>
+  </section>
+
+  <section id="toolsSheet" class="sheet" hidden aria-modal="true" role="dialog" aria-labelledby="toolsSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">UTILITY</div><h2 id="toolsSheetTitle">Tools</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <div class="tool-list">
+      <a class="tool-row" href="../sync.html"><span><strong>GitHub sync</strong><small>Send the latest browser snapshot to Notes</small></span><span>→</span></a>
+      <button class="tool-row" data-action="export-md" type="button"><span><strong>Export current project</strong><small>Download a Markdown copy</small></span><span>↓</span></button>
+      <button class="tool-row" data-action="import-md" type="button"><span><strong>Import Markdown</strong><small>Add a Markdown file as a new project</small></span><span>↑</span></button>
+      <a class="tool-row" href="../classic.html"><span><strong>Classic Ledger</strong><small>Open the original interface</small></span><span>↗</span></a>
+    </div>
+    <input id="importFile" type="file" accept=".md,text/markdown,text/plain" hidden>
+  </section>
+
+  <section id="projectSheet" class="sheet tall-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="projectSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">PROJECT CARD</div><h2 id="projectSheetTitle">Project</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <form id="projectForm">
+      <input id="projectId" type="hidden">
+      <label class="field"><span>Project title</span><input id="projectTitleInput" type="text" required></label>
+      <label class="field"><span>Description</span><textarea id="projectDescriptionInput" rows="3"></textarea></label>
+      <div class="field"><span>Format</span><div class="segmented"><button id="modeList" type="button" data-mode="LIST">List</button><button id="modeRoadmap" type="button" data-mode="ROADMAP">Roadmap</button></div></div>
+      <div id="roadmapFields" class="roadmap-fields" hidden>
+        <label class="field"><span>Current reality</span><textarea id="framingCurrent" rows="3"></textarea></label>
+        <label class="field"><span>Definition of done</span><textarea id="framingDone" rows="3"></textarea></label>
+        <label class="field"><span>Final proof</span><textarea id="framingProof" rows="2"></textarea></label>
+        <label class="field"><span>In scope</span><textarea id="framingScope" rows="2"></textarea></label>
+        <label class="field"><span>Not doing</span><textarea id="framingNotDoing" rows="2"></textarea></label>
+        <label class="field"><span>Effort limit</span><input id="framingEffort" type="text"></label>
+        <label class="field"><span>Highest-risk unknown</span><textarea id="framingRisk" rows="2"></textarea></label>
+      </div>
+      <button class="paper-button primary full" type="submit">Save project</button>
+    </form>
+  </section>
+
+  <section id="itemSheet" class="sheet tall-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="itemSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div id="itemKindLabel" class="sheet-label">ENTRY</div><h2 id="itemSheetTitle">Entry</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <form id="itemForm">
+      <input id="itemId" type="hidden">
+      <label class="field"><span>Title</span><textarea id="itemTitleInput" rows="3" required></textarea></label>
+      <label class="field"><span>Section / phase</span><input id="itemPhaseInput" type="text"></label>
+      <label class="field"><span>Notes</span><textarea id="itemNotesInput" rows="3"></textarea></label>
+      <div id="itemExecutionFields">
+        <label class="field"><span>Outcome</span><textarea id="itemOutcomeInput" rows="2"></textarea></label>
+        <label class="field"><span>Input / source</span><textarea id="itemInputsInput" rows="2"></textarea></label>
+        <label class="field"><span>Waiting on / dependencies</span><textarea id="itemDependenciesInput" rows="2"></textarea></label>
+        <label class="field"><span>Boundary</span><textarea id="itemBoundaryInput" rows="2"></textarea></label>
+        <label class="field"><span>Done when</span><textarea id="itemAcceptanceInput" rows="2"></textarea></label>
+        <label class="field"><span>Verification</span><textarea id="itemVerificationInput" rows="2"></textarea></label>
+        <label class="field"><span>Stop condition</span><textarea id="itemStopInput" rows="2"></textarea></label>
+      </div>
+      <div class="status-actions" id="itemStatusActions"></div>
+      <button class="paper-button full" type="submit">Save changes</button>
+    </form>
+  </section>
+
+  <script src="./stationery.js?v=1"></script>
+  <script src="./theme.js?v=1"></script>
 </body>
 </html>
