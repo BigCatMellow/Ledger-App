@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="./journal.css?v=2">
   <link rel="stylesheet" href="./roadmap-help.css?v=1">
   <link rel="stylesheet" href="./typography.css?v=1">
+  <link rel="stylesheet" href="./project-links.css?v=1">
 </head>
 <body>
   <div class="desk">
@@ -64,6 +65,7 @@
             <div id="projectMode" class="project-kicker">LIST</div>
             <h2 id="projectTitle"></h2>
             <p id="projectDescription" class="project-description"></p>
+            <div id="projectLinks" class="project-links" aria-label="Project links" hidden></div>
           </div>
           <button class="quiet-button" data-action="project-menu" type="button" aria-label="Project options">•••</button>
         </div>
@@ -185,6 +187,11 @@
       <input id="projectId" type="hidden">
       <label class="field"><span>Project title</span><input id="projectTitleInput" type="text" required></label>
       <label class="field"><span>Description</span><textarea id="projectDescriptionInput" rows="3"></textarea></label>
+      <label class="field project-links-field">
+        <span>Project Links</span>
+        <textarea id="projectLinksInput" rows="3" placeholder="GitHub | https://github.com/owner/repository&#10;Live Site | https://example.com"></textarea>
+        <small class="field-help">One link per line. Labels are optional; use Label | URL when you want one.</small>
+      </label>
       <div class="field"><span>Format</span><div class="segmented"><button id="modeList" type="button" data-mode="LIST">List</button><button id="modeRoadmap" type="button" data-mode="ROADMAP">Roadmap</button></div></div>
       <div id="roadmapFields" class="roadmap-fields" hidden>
         <div class="field roadmap-field">
@@ -262,7 +269,7 @@
     </div>
   </section>
 
-  <script src="./stationery.js?v=2"></script>
+  <script src="./stationery.js?v=3"></script>
   <script src="./theme.js?v=2"></script>
   <script src="./journal.js?v=2"></script>
   <script src="./roadmap-help.js?v=1"></script>
