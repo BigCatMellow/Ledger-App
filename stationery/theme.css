@@ -59,3 +59,59 @@ html[data-theme="dark"] .tool-row{color:var(--ink)}
 html[data-theme="dark"] .history-date{border-color:var(--rule-dark)}
 
 @media(min-width:720px){html[data-theme="dark"] .desk{border-color:#4d473e}}
+
+/* Selective corner softening: modernize controls without losing Ledger's ruled-paper structure. */
+:root{
+  --radius-small:6px;
+  --radius-control:9px;
+  --radius-panel:16px;
+}
+
+/* Small objects can carry more rounding without changing the page's overall geometry. */
+.date-block,
+.theme-toggle{
+  border-radius:var(--radius-control);
+}
+
+.project-tab,
+.index-add{
+  border-radius:8px 8px 0 0;
+}
+
+.stamp{
+  border-radius:4px;
+}
+
+/* Cards and action surfaces get a restrained, consistent radius. */
+.roadmap-summary{
+  border-radius:var(--radius-control);
+}
+
+.paper-button,
+.field input,
+.field textarea,
+.status-actions button{
+  border-radius:var(--radius-control);
+}
+
+.segmented{
+  border-radius:var(--radius-control);
+  overflow:hidden;
+}
+
+/* Sheets should feel like floating panels, while notebook rows and rules stay square. */
+.sheet{
+  border-radius:var(--radius-panel) var(--radius-panel) 0 0;
+}
+
+@media(min-width:720px){
+  .desk{
+    border-radius:14px;
+  }
+  .bottom-ruler{
+    border-radius:12px;
+  }
+  .sheet{
+    border-radius:var(--radius-panel);
+  }
+}
