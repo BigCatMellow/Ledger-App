@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 public class MainActivity extends Activity {
     private static final String APP_HOST = "bigcatmellow.github.io";
     private static final String APP_PATH_PREFIX = "/Ledger-App/";
-    private static final String APP_URL = "https://bigcatmellow.github.io/Ledger-App/stationery/";
+    private static final String APP_URL = "https://bigcatmellow.github.io/Ledger-App/";
     private static final String ANDROID_SYNC_URL = "https://bigcatmellow.github.io/Ledger-App/stationery/android-sync.html";
     private static final String ANDROID_BRIDGE_URL = "https://bigcatmellow.github.io/Ledger-App/stationery/android-bridge.js?v=1";
     private static final int FILE_CHOOSER_REQUEST = 1201;
