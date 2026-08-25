@@ -106,7 +106,7 @@
     const entry = id ? state.journal.find(j => j.id === id && j.p === project.id) : null;
     $('journalId').value = entry?.id || '';
     $('journalBody').value = entry?.body || '';
-    $('journalSheetTitle').textContent = entry ? 'Edit thought' : 'New thought';
+    $('journalSheetTitle').textContent = entry ? 'Edit Thought' : 'New Thought';
     $('journalDelete').hidden = !entry;
 
     document.querySelectorAll('.sheet').forEach(sheet => {
@@ -197,7 +197,7 @@
 
   const title = $('projectTitle');
   if(title){
-    new MutationObserver(renderJournal).observe(title, {childList:true, characterData:true, subtree:true});
+    new MutationObserver(renderJournal).observe(title, {childList:true, characterData:true,subtree:true});
   }
 
   renderJournal();
