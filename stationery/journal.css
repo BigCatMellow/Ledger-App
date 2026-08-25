@@ -1,0 +1,97 @@
+/* Project journal: dated freeform thoughts kept separate from tasks and notes. */
+.journal-rule{
+  align-items:center;
+}
+.journal-rule-actions{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.journal-add{
+  border:1px solid var(--rule-dark);
+  border-radius:7px;
+  background:var(--paper-deep);
+  color:var(--ink);
+  min-height:30px;
+  padding:4px 9px;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.journal-add:active{
+  transform:translateY(1px);
+}
+.journal-list{
+  margin-left:28px;
+  display:grid;
+  gap:8px;
+}
+.journal-card{
+  width:100%;
+  border:1px solid var(--rule);
+  border-radius:9px;
+  background:var(--paper-deep);
+  color:var(--ink);
+  padding:11px 13px 12px;
+  text-align:left;
+  box-shadow:none;
+}
+.journal-card:active{
+  border-color:var(--rule-dark);
+}
+.journal-time{
+  display:block;
+  margin-bottom:5px;
+  color:var(--verm-dark);
+  font-size:9px;
+  line-height:1.25;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.journal-body{
+  display:block;
+  white-space:pre-wrap;
+  font-family:"Iowan Old Style","Palatino Linotype","Yu Mincho",Georgia,serif;
+  font-size:15px;
+  line-height:1.48;
+}
+.journal-empty{
+  color:var(--ink-soft);
+  border:1px dashed var(--rule-dark);
+  border-radius:9px;
+  padding:12px 13px;
+  font-size:12px;
+  font-style:italic;
+}
+.journal-sheet textarea{
+  min-height:180px;
+}
+.journal-sheet-actions{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:9px;
+  align-items:end;
+}
+.journal-delete{
+  color:var(--verm-dark);
+}
+.journal-sheet-actions .paper-button.full{
+  margin-top:12px;
+}
+
+@media(hover:hover) and (pointer:fine){
+  .journal-card:hover{
+    border-color:var(--rule-dark);
+  }
+  .journal-add:hover{
+    border-color:var(--ink);
+  }
+}
+
+@media(min-width:720px){
+  .journal-list{
+    margin-left:42px;
+  }
+}
