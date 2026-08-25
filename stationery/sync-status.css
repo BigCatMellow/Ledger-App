@@ -1,0 +1,50 @@
+/* Sync status helper: only visible when Ledger data has never been synced or has changed since the last snapshot. */
+.sync-nudge{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 20px;
+  border-bottom:1px solid var(--rule-dark);
+  background:var(--paper-deep);
+  color:var(--ink-soft);
+  font-size:12px;
+  line-height:1.4;
+}
+.sync-nudge[hidden]{display:none}
+.sync-nudge strong{
+  color:var(--ink);
+  font-weight:700;
+}
+.sync-nudge-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex:0 0 auto;
+}
+.sync-nudge a{
+  color:var(--verm-dark);
+  font-weight:700;
+  text-decoration:underline;
+  text-decoration-color:var(--rule-dark);
+  text-underline-offset:3px;
+}
+
+@media(max-width:520px){
+  .sync-nudge{
+    align-items:flex-start;
+    padding:10px 20px;
+    font-size:13px;
+  }
+  .sync-nudge-actions{
+    display:grid;
+    gap:4px;
+    text-align:right;
+  }
+}
+
+@media(min-width:720px){
+  .sync-nudge{padding-left:38px;padding-right:38px}
+}
