@@ -1,0 +1,282 @@
+/* Ledger typography layer: Inter throughout, with readable mobile minimums. */
+html,
+body,
+button,
+input,
+textarea,
+select{
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+
+html{
+  font-size:16px;
+  line-height:1.5;
+}
+
+/* Remove the remaining display-serif typography so the interface is consistent. */
+h1,
+.project-heading h2,
+.sheet-head h2,
+.empty-state h2,
+.empty-number,
+.date-block span:first-child,
+.journal-body,
+.roadmap-help-head h2,
+.roadmap-help-example{
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+
+h1{
+  font-size:36px;
+  line-height:1.05;
+  font-weight:700;
+  letter-spacing:-.035em;
+}
+
+.project-heading h2{
+  font-size:30px;
+  line-height:1.1;
+  font-weight:700;
+  letter-spacing:-.025em;
+}
+
+.sheet-head h2,
+.roadmap-help-head h2{
+  font-size:26px;
+  line-height:1.12;
+  font-weight:700;
+  letter-spacing:-.025em;
+}
+
+.eyebrow,
+.strip-label,
+.sheet-label,
+.project-kicker{
+  font-size:11px;
+  line-height:1.35;
+  letter-spacing:.11em;
+}
+
+.date-block span:first-child{
+  font-size:21px;
+  font-weight:700;
+}
+.date-block span:last-child{
+  font-size:10px;
+}
+
+.project-tab{
+  font-size:13px;
+  line-height:1.25;
+}
+
+.project-description{
+  font-size:14px;
+  line-height:1.5;
+}
+
+.section-rule{
+  font-size:12px;
+  line-height:1.3;
+  letter-spacing:.095em;
+}
+.section-note{
+  font-size:11px;
+  line-height:1.3;
+}
+
+.entry-title{
+  font-size:15px;
+  line-height:1.4;
+}
+.entry-meta{
+  font-size:12px;
+  line-height:1.4;
+}
+.stamp{
+  font-size:9px;
+  line-height:1.2;
+}
+.memo-card{
+  font-size:15px;
+  line-height:1.5;
+}
+.empty-line,
+.journal-empty{
+  font-size:13px;
+  line-height:1.5;
+}
+.done-section summary{
+  font-size:11px;
+  line-height:1.4;
+}
+
+.roadmap-row{
+  font-size:13px;
+  line-height:1.5;
+}
+.roadmap-row strong{
+  font-size:10px;
+  line-height:1.4;
+}
+
+.bottom-ruler button{
+  font-size:11px;
+  line-height:1.2;
+}
+
+.project-list button{
+  font-size:14px;
+}
+.project-list small,
+.history-row small,
+.tool-row small{
+  font-size:12px;
+  line-height:1.4;
+}
+
+.paper-button{
+  font-size:14px;
+}
+.segmented button,
+.status-actions button{
+  font-size:13px;
+}
+
+.field>span,
+.roadmap-field-label label{
+  font-size:12px;
+  line-height:1.35;
+  letter-spacing:.055em;
+}
+
+.field input,
+.field textarea{
+  font-size:16px;
+  line-height:1.5;
+  min-height:46px;
+}
+
+.history-row p,
+.tool-row strong{
+  font-size:14px;
+  line-height:1.45;
+}
+
+.journal-add{
+  font-size:11px;
+  line-height:1.2;
+  letter-spacing:.055em;
+}
+.journal-time{
+  font-size:11px;
+  line-height:1.35;
+  letter-spacing:.055em;
+}
+.journal-body{
+  font-size:15px;
+  line-height:1.55;
+}
+
+/* Roadmap help needs to be readable without zooming. */
+.roadmap-field-label{
+  gap:9px;
+  margin-bottom:7px;
+}
+.roadmap-field-label label{
+  font-weight:700;
+  color:var(--ink);
+}
+.roadmap-help-button{
+  width:30px;
+  height:30px;
+  flex-basis:30px;
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-size:13px;
+  font-weight:700;
+}
+.roadmap-help-kicker{
+  font-size:11px;
+  line-height:1.3;
+}
+.roadmap-help-definition{
+  font-size:15px;
+  line-height:1.6;
+}
+.roadmap-help-block strong{
+  font-size:12px;
+  line-height:1.35;
+}
+.roadmap-help-block p,
+.roadmap-help-example{
+  font-size:14px !important;
+  line-height:1.55;
+}
+
+@media(max-width:520px){
+  .masthead{
+    padding-top:20px;
+  }
+
+  h1{
+    font-size:34px;
+  }
+
+  .project-heading h2{
+    font-size:28px;
+  }
+
+  .sheet-head h2,
+  .roadmap-help-head h2{
+    font-size:24px;
+  }
+
+  .eyebrow,
+  .strip-label,
+  .sheet-label,
+  .project-kicker{
+    font-size:11px;
+  }
+
+  .field>span,
+  .roadmap-field-label label{
+    font-size:13px;
+    letter-spacing:.035em;
+  }
+
+  .roadmap-field{
+    margin:18px 0;
+  }
+
+  .roadmap-help-button{
+    width:32px;
+    height:32px;
+    flex-basis:32px;
+    font-size:14px;
+  }
+
+  .entry-title,
+  .memo-card,
+  .journal-body,
+  .roadmap-help-definition{
+    font-size:16px;
+  }
+
+  .entry-meta,
+  .project-list small,
+  .history-row small,
+  .tool-row small,
+  .section-note{
+    font-size:12px;
+  }
+
+  .roadmap-help-block p,
+  .roadmap-help-example{
+    font-size:15px !important;
+  }
+
+  .roadmap-help-modal{
+    width:calc(100% - 24px);
+    padding:17px 16px 19px;
+  }
+}
