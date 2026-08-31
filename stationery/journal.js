@@ -64,7 +64,38 @@
     return `${date} · ${time}`;
   }
 
+  function ensureTaskAction(){
+    const count = $('openCount');
+    if(!count) return;
+    const rule = count.closest('.section-rule');
+    if(!rule || rule.querySelector('[data-project-task-new]')) return;
+
+    const actions = document.createElement('span');
+    actions.className = 'journal-rule-actions project-task-actions';
+    count.replaceWith(actions);
+    actions.appendChild(count);
+
+    const button = document.createElement('button');
+    button.className = 'journal-add project-task-add';
+    button.type = 'button';
+    button.dataset.projectTaskNew = '';
+    button.textContent = '＋ Task';
+    button.setAttribute('aria-label', 'Add task to current project');
+    actions.appendChild(button);
+  }
+
+  function openTaskCapture(){
+    const capture = document.querySelector('[data-action="capture"]');
+    if(!capture) return;
+    capture.click();
+    setTimeout(() => {
+      document.querySelector('[data-kind="CHECKLIST"]')?.click();
+      $('captureTitle')?.focus({preventScroll:true});
+    }, 30);
+  }
+
   function renderJournal(){
+    ensureTaskAction();
     const list = $('journalItems');
     const count = $('journalCount');
     if(!list || !count) return;
@@ -168,6 +199,10 @@
   }
 
   document.addEventListener('click', event => {
+    if(event.target.closest('[data-project-task-new]')){
+      openTaskCapture();
+      return;
+    }
     if(event.target.closest('[data-journal-new]')){
       openJournal();
       return;
