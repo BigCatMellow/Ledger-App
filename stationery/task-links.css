@@ -1,4 +1,4 @@
-/* Direct task links: compact controls on the far right of each task row. */
+/* Task link utilities: compact, direct, and visually secondary to the task itself. */
 .entry:has(> .task-link-actions){
   grid-template-columns:54px minmax(0,1fr) auto 18px;
   column-gap:8px;
@@ -7,10 +7,10 @@
   display:flex;
   align-items:center;
   justify-self:end;
-  align-self:start;
-  gap:5px;
+  align-self:center;
+  gap:4px;
   margin:0;
-  padding-top:0;
+  padding:0;
   flex-wrap:nowrap;
   white-space:nowrap;
 }
@@ -21,21 +21,78 @@
   border:1px solid var(--rule-dark);
   border-radius:var(--radius-small,6px);
   background:var(--paper-deep);
-  color:var(--ink);
+  color:var(--ink-soft);
   font-size:10px;
   font-weight:750;
   line-height:1;
   letter-spacing:.01em;
 }
-/* Keep the controls visually small while retaining a forgiving touch target. */
 .task-link-button::before{
   content:"";
   position:absolute;
   inset:-6px -3px;
 }
-.task-link-add,.task-link-open{border-color:var(--blue)}
-.task-link-edit{color:var(--ink-soft)}
+.task-link-add{border-color:var(--blue);color:var(--ink)}
+.task-link-open{
+  width:30px;
+  padding-left:0;
+  padding-right:0;
+  border-color:var(--blue);
+  color:var(--ink);
+  font-size:14px;
+}
 .task-link-button:active{transform:translateY(1px)}
+
+/* Link management stays inside Ledger instead of using browser prompt/alert UI. */
+.task-link-sheet-backdrop{
+  position:fixed;
+  z-index:64;
+  inset:0;
+  background:rgba(31,28,24,.44);
+  backdrop-filter:blur(2px);
+}
+.task-link-sheet{
+  position:fixed;
+  z-index:65;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(100%,520px);
+  background:var(--paper);
+  border:1px solid var(--ink);
+  border-bottom:0;
+  border-radius:12px 12px 0 0;
+  padding:8px 18px calc(22px + var(--safe-bottom));
+  box-shadow:0 -12px 40px rgba(31,28,24,.24);
+}
+.task-link-sheet[hidden],.task-link-sheet-backdrop[hidden]{display:none}
+.task-link-sheet .sheet-head{margin-bottom:14px}
+.task-link-sheet .field{margin-top:4px}
+.task-link-sheet-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:14px;
+}
+.task-link-sheet-actions .paper-button{margin-top:0}
+.task-link-sheet-actions .primary{min-width:120px}
+.task-link-remove{color:var(--verm-dark);border-color:var(--rule-dark)}
+.task-link-error{
+  display:block;
+  margin:6px 0 0;
+  color:var(--verm-dark);
+  font-size:12px;
+  line-height:1.45;
+}
+.task-link-error[hidden]{display:none}
+.task-link-field-help{
+  display:block;
+  margin-top:6px;
+  color:var(--ink-soft);
+  font-size:11px;
+  line-height:1.4;
+}
 
 @media(hover:hover) and (pointer:fine){
   .task-link-button:hover{border-color:var(--ink)}
@@ -46,7 +103,26 @@
     grid-template-columns:54px minmax(0,1fr) auto 14px;
     column-gap:6px;
   }
-  .task-link-actions{gap:4px;padding-top:1px}
+  .task-link-actions{gap:3px}
   .task-link-button{min-height:30px;padding:5px 7px;font-size:10px}
+  .task-link-open{width:31px;padding-left:0;padding-right:0;font-size:14px}
   .task-link-button::before{inset:-7px -3px}
+  .task-link-sheet{
+    width:100%;
+    padding:8px 18px calc(18px + var(--safe-bottom));
+  }
+  .task-link-sheet-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .task-link-sheet-actions .paper-button{width:100%;min-height:48px}
+  .task-link-sheet-actions .primary:only-child{grid-column:1/-1}
+}
+
+@media(min-width:720px){
+  .task-link-sheet{
+    bottom:12px;
+    border-bottom:1px solid var(--ink);
+    border-radius:12px;
+  }
 }
