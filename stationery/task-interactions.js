@@ -102,7 +102,6 @@
   function performUndo(){
     if(!undoBefore)return;
     const current=localStorage.getItem(STORAGE_KEY)||'';
-    // Never erase work done after the action being offered for undo.
     if(current!==undoAfter){hideUndo();return;}
     const restore=undoBefore;
     hideUndo();
@@ -140,7 +139,8 @@
     const button=actions.querySelector('[data-task-reorder-toggle]');
     const entries=[...openItems.querySelectorAll(':scope > .entry[data-item]')];
     if(button){
-      button.textContent=reorderMode?'Done':'Reorder';
+      const label=reorderMode?'Done':'Reorder';
+      if(button.textContent!==label)button.textContent=label;
       button.disabled=entries.length<2&&!reorderMode;
       button.setAttribute('aria-pressed',reorderMode?'true':'false');
     }
@@ -152,13 +152,22 @@
     if(!openItems)return;
     const entries=[...openItems.querySelectorAll(':scope > .entry[data-item]')];
     entries.forEach((entry,index)=>{
-      entry.querySelector('.task-order-controls')?.remove();
-      if(!reorderMode)return;
-      const controls=document.createElement('span');
-      controls.className='task-order-controls';
-      controls.innerHTML=`<button type="button" data-task-move="-1" data-task-id="${entry.dataset.item}" aria-label="Move task up" ${index===0?'disabled':''}>↑</button><button type="button" data-task-move="1" data-task-id="${entry.dataset.item}" aria-label="Move task down" ${index===entries.length-1?'disabled':''}>↓</button>`;
-      const chevron=entry.querySelector('.entry-chevron');
-      if(chevron)chevron.before(controls); else entry.appendChild(controls);
+      let controls=entry.querySelector('.task-order-controls');
+      if(!reorderMode){
+        controls?.remove();
+        return;
+      }
+      if(!controls){
+        controls=document.createElement('span');
+        controls.className='task-order-controls';
+        controls.innerHTML=`<button type="button" data-task-move="-1" data-task-id="${entry.dataset.item}" aria-label="Move task up">↑</button><button type="button" data-task-move="1" data-task-id="${entry.dataset.item}" aria-label="Move task down">↓</button>`;
+        const chevron=entry.querySelector('.entry-chevron');
+        if(chevron)chevron.before(controls); else entry.appendChild(controls);
+      }
+      const up=controls.querySelector('[data-task-move="-1"]');
+      const down=controls.querySelector('[data-task-move="1"]');
+      if(up)up.disabled=index===0;
+      if(down)down.disabled=index===entries.length-1;
     });
   }
 
@@ -181,7 +190,6 @@
       const rail=entry.querySelector(':scope > .task-link-actions');
       if(!rail)return;
 
-      // With no checklist yet, expose the first-step action in the compact task rail.
       if(!hasChecklist(item)&&!rail.querySelector('[data-task-inline-step]')){
         const add=document.createElement('button');
         add.type='button';
@@ -212,9 +220,11 @@
       entry.classList.toggle('task-collapsed',collapsed);
       const button=entry.querySelector('[data-task-collapse]');
       if(button){
-        button.textContent=collapsed?'▾':'▴';
-        button.title=collapsed?'Show task details':'Hide task details';
-        button.setAttribute('aria-label',button.title);
+        const symbol=collapsed?'▾':'▴';
+        const title=collapsed?'Show task details':'Hide task details';
+        if(button.textContent!==symbol)button.textContent=symbol;
+        if(button.title!==title)button.title=title;
+        button.setAttribute('aria-label',title);
         button.setAttribute('aria-expanded',collapsed?'false':'true');
       }
     });
@@ -296,7 +306,6 @@
     offerUndo(before,'Task moved');
   }
 
-  // Register before task-details/task-links so direct actions can offer a safe undo.
   document.addEventListener('click',event=>{
     const undo=event.target.closest('[data-ledger-undo]');
     if(undo){
@@ -355,8 +364,6 @@
       return;
     }
 
-    // Existing direct interactions are also reversible. Let their own handlers run,
-    // then compare the resulting Ledger state before offering Undo.
     const reversible=event.target.closest('.task-subtask[data-subtask-id],[data-task-link-edit]');
     if(reversible){
       const before=localStorage.getItem(STORAGE_KEY)||'';
