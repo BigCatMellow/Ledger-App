@@ -117,6 +117,7 @@
     const status=$('itemStatusActions');
     if(!form||!status||$('itemSubtasksInput'))return;
     const field=document.createElement('label');
+    field.id='itemSubtasksField';
     field.className='field';
     field.innerHTML='<span>Checklist / subtasks</span><textarea id="itemSubtasksInput" rows="5" placeholder="One item per line\n- [ ] First step\n- [x] Finished step"></textarea><small class="task-checklist-field-help">One item per line. Use [x] for completed items. These stay nested under the task and can be checked directly from the project page.</small>';
     status.before(field);
@@ -125,18 +126,21 @@
   function populateEditor(itemId){
     ensureEditorField();
     const input=$('itemSubtasksInput');
-    if(!input)return;
+    const field=$('itemSubtasksField');
+    if(!input||!field)return;
     const item=readState().items.find(x=>x.id===itemId);
-    input.value=item?subtasksText(item):'';
+    field.hidden=!item||item.kind==='NOTE';
+    input.value=item&&item.kind!=='NOTE'?subtasksText(item):'';
   }
 
   function saveEditorSubtasks(){
     const id=$('itemId')?.value;
     const input=$('itemSubtasksInput');
-    if(!id||!input)return;
+    const field=$('itemSubtasksField');
+    if(!id||!input||field?.hidden)return;
     const state=readState();
     const item=state.items.find(x=>x.id===id);
-    if(!item)return;
+    if(!item||item.kind==='NOTE')return;
     item.subtasks=parseSubtasks(input.value,item.subtasks);
     writeState(state);
     enhanceEntries();
@@ -179,5 +183,6 @@
   window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)setTimeout(enhanceEntries,0)});
 
   ensureEditorField();
+  $('itemSubtasksField').hidden=true;
   enhanceEntries();
 })();
