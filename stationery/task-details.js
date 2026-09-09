@@ -173,7 +173,9 @@
   $('itemForm')?.addEventListener('submit',()=>setTimeout(saveEditorSubtasks,0));
 
   const lists=['activeItems','openItems','doneItems'].map($).filter(Boolean);
-  lists.forEach(list=>new MutationObserver(enhanceEntries).observe(list,{childList:true,subtree:true}));
+  // Only watch direct task-row replacement/addition. Watching descendants would
+  // also observe the detail rows this script injects and cause a render loop.
+  lists.forEach(list=>new MutationObserver(enhanceEntries).observe(list,{childList:true}));
   window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY)setTimeout(enhanceEntries,0)});
 
   ensureEditorField();
