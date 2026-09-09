@@ -61,14 +61,13 @@
     const byText=new Map(old.map(sub=>[sub.text.toLowerCase(),sub]));
     return String(value||'').split('\n').map(line=>line.trim()).filter(Boolean).map(line=>{
       const match=line.match(/^[-*]?\s*\[([ xX])\]\s*(.+)$/);
-      const text=(match?match[2]:line.replace(/^[-*]\s*/,'' )).trim();
+      const text=(match?match[2]:line.replace(/^[-*]\s*/,'')).trim();
       if(!text)return null;
       const prior=byText.get(text.toLowerCase());
-      const explicit=!!match;
       return {
         id:prior?.id||uid(),
         text,
-        done:explicit?match[1].toLowerCase()==='x':!!prior?.done
+        done:match?match[1].toLowerCase()==='x':!!prior?.done
       };
     }).filter(Boolean);
   }
@@ -94,7 +93,7 @@
     const subtasks=normalizeSubtasks(item);
     if(subtasks.length){
       const done=subtasks.filter(sub=>sub.done).length;
-      pieces.push(`<div class="task-checklist"><div class="task-checklist-head"><span>Checklist</span><span>${done}/${subtasks.length}</span></div>${subtasks.map(sub=>`<label class="task-subtask ${sub.done?'done':''}"><input type="checkbox" data-subtask-id="${esc(sub.id)}" data-subtask-item="${esc(item.id)}" ${sub.done?'checked':''}><span>${esc(sub.text)}</span></label>`).join('')}</div>`);
+      pieces.push(`<div class="task-checklist"><div class="task-checklist-head"><span>Checklist</span><span>${done}/${subtasks.length}</span></div>${subtasks.map(sub=>`<label class="task-subtask ${sub.done?'done':''}" data-subtask-id="${esc(sub.id)}" data-subtask-item="${esc(item.id)}"><input type="checkbox" ${sub.done?'checked':''}><span>${esc(sub.text)}</span></label>`).join('')}</div>`);
     }
     return pieces.length?`<div class="task-extra">${pieces.join('')}</div>`:'';
   }
@@ -156,14 +155,14 @@
     enhanceEntries();
   }
 
+  // Capture-phase handling keeps a checklist tap from opening the parent task editor.
   document.addEventListener('click',event=>{
-    const checkbox=event.target.closest('[data-subtask-id]');
-    if(checkbox){
-      event.preventDefault();
-      event.stopPropagation();
-      toggleSubtask(checkbox.dataset.subtaskItem,checkbox.dataset.subtaskId,!checkbox.checked);
-      return;
-    }
+    const row=event.target.closest('.task-subtask[data-subtask-id]');
+    if(!row)return;
+    const checkbox=row.querySelector('input[type="checkbox"]');
+    event.preventDefault();
+    event.stopPropagation();
+    toggleSubtask(row.dataset.subtaskItem,row.dataset.subtaskId,!checkbox?.checked);
   },true);
 
   document.addEventListener('click',event=>{
