@@ -1,0 +1,243 @@
+/* Mobile task UI: reading stays inline; typing moves into bottom sheets. */
+@media(max-width:600px){
+  /* Rebuild task rows for phone width. Status and utilities get the top line;
+     the task's actual content gets the full row underneath. */
+  .entry-list>.entry.task-workspace-enhanced,
+  .entry-list>.entry.task-workspace-enhanced:has(> .task-link-actions){
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto auto;
+    grid-template-areas:
+      "stamp link disclosure"
+      "main main main";
+    column-gap:8px;
+    row-gap:7px;
+    align-items:center;
+    padding:12px 8px 13px;
+  }
+  .entry.task-workspace-enhanced>.stamp{
+    grid-area:stamp;
+    justify-self:start;
+    align-self:center;
+  }
+  .entry.task-workspace-enhanced>.entry-main,
+  .entry.task-workspace-enhanced>.entry-content{
+    grid-area:main;
+    min-width:0;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+  }
+  .entry.task-workspace-enhanced>.task-link-actions{
+    grid-area:link;
+    justify-self:end;
+    align-self:center;
+  }
+  .entry.task-workspace-enhanced>.entry-chevron{
+    grid-area:disclosure;
+    justify-self:end;
+    align-self:center;
+  }
+
+  /* No-link state belongs in the action line instead of taking title width. */
+  .entry.task-workspace-enhanced>.task-link-actions:has(.task-link-add):not(:has(.task-link-open)){
+    display:none;
+  }
+  .entry.task-workspace-enhanced .task-link-add{display:none!important}
+
+  .entry.task-workspace-enhanced .entry-title{
+    order:0;
+    width:100%;
+    font-size:17px;
+    line-height:1.35;
+    font-weight:700;
+  }
+  .entry.task-workspace-enhanced .entry-meta{
+    order:1;
+    margin-top:3px;
+    font-size:13px;
+    line-height:1.4;
+  }
+  .entry.task-workspace-enhanced .task-notations{order:2}
+  .entry.task-workspace-enhanced .task-extra{order:3}
+  .entry.task-workspace-enhanced .task-work-actions{order:4}
+
+  /* Quick actions read like a small utility line, not a toolbar. */
+  .task-work-actions{
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:0;
+    min-height:38px;
+    margin-top:10px;
+    padding-top:8px;
+    border-top:1px solid rgba(102,122,131,.18);
+  }
+  .task-work-actions button{
+    min-height:36px;
+    padding:7px 10px 7px 0;
+    margin-right:10px;
+    border:0;
+    background:transparent;
+    color:var(--ink-soft);
+    font-size:12px;
+    line-height:1.2;
+    font-weight:700;
+  }
+  .task-work-actions button+button::before{
+    content:"·";
+    position:static;
+    display:inline-block;
+    margin-right:10px;
+    color:var(--rule-dark);
+  }
+  .task-work-actions button::after{content:none}
+  .task-work-actions button:active{color:var(--verm-dark)}
+
+  .task-notations{
+    width:100%;
+    margin-top:10px;
+    padding:0;
+    border-left:0;
+  }
+  .task-notations-label{
+    margin-bottom:4px;
+    font-size:10px;
+    letter-spacing:.07em;
+  }
+  .task-notation{
+    padding:8px 0;
+  }
+  .task-notation-time{font-size:10px}
+  .task-notation-text{
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .task-extra{
+    width:100%;
+    margin-top:10px;
+    font-size:14px;
+    line-height:1.5;
+  }
+  .task-field{
+    grid-template-columns:1fr;
+    gap:2px;
+    padding:3px 0;
+  }
+  .task-field-label{font-size:10px}
+  .task-checklist{margin-top:4px;padding-top:9px}
+  .task-checklist-head{min-height:36px;font-size:11px}
+
+  /* Reorder still temporarily owns the task's right side, but the title remains full-width. */
+  #openItems.task-reorder-mode .entry.task-workspace-enhanced:has(.task-order-controls){
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:
+      "stamp order"
+      "main main";
+    row-gap:7px;
+  }
+  #openItems.task-reorder-mode .entry.task-workspace-enhanced>.task-order-controls{
+    grid-area:order;
+  }
+}
+
+/* Shared phone bottom sheet for New Task, Note, and Step. */
+.mobile-task-sheet-backdrop{
+  position:fixed;
+  z-index:70;
+  inset:0;
+  background:rgba(31,28,24,.46);
+  backdrop-filter:blur(2px);
+}
+.mobile-task-sheet{
+  position:fixed;
+  z-index:71;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(100%,540px);
+  max-height:min(72dvh,620px);
+  overflow:auto;
+  background:var(--paper);
+  border:1px solid var(--ink);
+  border-bottom:0;
+  border-radius:var(--radius-panel,16px) var(--radius-panel,16px) 0 0;
+  padding:8px 18px calc(18px + var(--safe-bottom));
+  box-shadow:0 -12px 40px rgba(31,28,24,.24);
+}
+.mobile-task-sheet[hidden],.mobile-task-sheet-backdrop[hidden]{display:none}
+.mobile-task-sheet .sheet-head{margin-bottom:14px}
+.mobile-task-context{
+  margin:0 0 12px;
+  color:var(--ink-soft);
+  font-size:13px;
+  line-height:1.4;
+  font-weight:650;
+}
+.mobile-task-sheet .field{margin:6px 0 0}
+.mobile-task-sheet input,
+.mobile-task-sheet textarea{
+  width:100%;
+  min-height:50px;
+  padding:11px 12px;
+  border:1px solid var(--rule-dark);
+  border-radius:var(--radius-control,9px);
+  background:var(--paper);
+  color:var(--ink);
+  font:inherit;
+  font-size:16px;
+  line-height:1.45;
+  outline:none;
+}
+.mobile-task-sheet textarea{min-height:128px;resize:vertical}
+.mobile-task-sheet input:focus,
+.mobile-task-sheet textarea:focus{
+  border-color:var(--verm);
+  box-shadow:inset 3px 0 0 var(--verm);
+}
+.mobile-task-sheet-actions{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:8px;
+  align-items:center;
+  margin-top:16px;
+}
+.mobile-task-sheet-actions .paper-button{
+  min-height:46px;
+  margin:0;
+}
+.mobile-task-sheet-actions .primary{min-width:110px}
+.mobile-task-delete{color:var(--verm-dark)}
+html[data-theme="dark"] .mobile-task-sheet-backdrop{background:rgba(0,0,0,.62)}
+html[data-theme="dark"] .mobile-task-sheet{box-shadow:0 -12px 40px rgba(0,0,0,.45)}
+
+@media(max-width:600px){
+  .mobile-task-sheet{
+    width:100%;
+    max-height:min(74dvh,620px);
+    padding:8px 16px calc(16px + var(--safe-bottom));
+  }
+  .mobile-task-sheet-actions{
+    grid-template-columns:1fr 1fr;
+  }
+  .mobile-task-action-spacer{display:none}
+  .mobile-task-delete{
+    grid-column:1/-1;
+    justify-self:start;
+    min-height:40px!important;
+    padding-left:0;
+    border-color:transparent;
+    background:transparent!important;
+  }
+  .mobile-task-delete[hidden]{display:none}
+  .mobile-task-sheet-actions .paper-button:not(.mobile-task-delete){width:100%;min-height:50px}
+}
+
+@media(min-width:720px){
+  .mobile-task-sheet{
+    bottom:12px;
+    border-bottom:1px solid var(--ink);
+    border-radius:var(--radius-panel,16px);
+  }
+}
