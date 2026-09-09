@@ -119,7 +119,7 @@ On a trusted personal device, you can turn on:
 
 **Remember GitHub connection on this device**
 
-When enabled, Ledger stores the repository, branch, and token in that browser's local storage so the connection survives closing and reopening the browser. Reopening the sync page restores the connection and automatic syncing resumes.
+When enabled, Ledger stores the repository, branch, and token in that browser's local storage so the connection survives closing and reopening the browser.
 
 Leave this option off on a shared, public, or otherwise untrusted device. Without it, the token remains session-only and is removed when the browser session ends.
 
@@ -147,23 +147,23 @@ data/ledger.json
 
 That JSON file is the latest Ledger snapshot sent from that browser.
 
-It may contain project titles, notes, roadmap information, journal entries, tasks, and work-history data, so the repository should remain private.
+It may contain project titles, notes, roadmap information, journal entries, tasks, subtasks, and work-history data, so the repository should remain private.
 
 ---
 
 ## 6. How Automatic Sync Works
 
-The GitHub sync page is intentionally separate from the main Ledger page.
+If **Remember GitHub connection on this device** is enabled, the main Ledger page can sync without keeping the separate sync page open.
 
-After you connect it:
+- Ledger checks its local project data about every 30 seconds.
+- It does not contact GitHub unless meaningful Ledger content has changed.
+- Switching between project tabs does not count as a content change and does not create a sync commit.
+- When content changes, Ledger sends a fresh snapshot to `ledger-data/data/ledger.json` automatically.
+- It also checks when the Ledger page becomes visible or is being left, which helps catch recent changes.
+- If GitHub temporarily rejects the connection or the token expires, Ledger backs off instead of repeatedly retrying.
+- The separate **Tools → GitHub sync** page remains available for setup, manual sync, changing repositories, or troubleshooting.
 
-- By default, the token is kept in browser **session storage**, not in the repository.
-- If **Remember GitHub connection on this device** is enabled, the connection is stored in browser **local storage** until you turn that option off or clear the site's browser data.
-- Reopening the sync page with a remembered connection restores the token and resumes syncing automatically.
-- Leave the GitHub sync tab open while using Ledger if you want changes to be pushed automatically while you work.
-- Ledger changes trigger a short delayed sync rather than creating a GitHub request for every keystroke.
-- The sync page also periodically checks for changes while it remains open.
-- If the tab is closed, GitHub keeps the most recent snapshot that successfully reached the repository.
+If **Remember GitHub connection on this device** is not enabled, Ledger does not keep the token after the browser session and unattended background sync cannot run after that session ends.
 
 ## What GitHub Sync Does Not Do Yet
 
