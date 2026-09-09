@@ -1,0 +1,22 @@
+/* Visible task context: only render information that actually exists. */
+.entry-content{min-width:0}
+.task-extra{margin-top:8px;display:grid;gap:7px;color:var(--ink-soft);font-size:12px;line-height:1.45}
+.task-note{white-space:pre-wrap;color:var(--ink)}
+.task-fields{display:grid;gap:5px}
+.task-field{display:grid;grid-template-columns:minmax(76px,auto) 1fr;gap:8px;align-items:start}
+.task-field-label{font-size:9px;line-height:1.5;letter-spacing:.07em;text-transform:uppercase;font-weight:800;color:var(--verm-dark)}
+.task-field-value{white-space:pre-wrap;min-width:0}
+.task-checklist{display:grid;gap:5px;margin-top:1px;padding-top:7px;border-top:1px dashed var(--rule)}
+.task-checklist-head{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--ink-soft)}
+.task-subtask{display:grid;grid-template-columns:18px minmax(0,1fr);gap:7px;align-items:start;min-height:28px;padding:2px 0;color:var(--ink);cursor:pointer}
+.task-subtask input{width:17px;height:17px;margin:1px 0 0;accent-color:var(--verm);cursor:pointer}
+.task-subtask span{white-space:pre-wrap}
+.task-subtask.done span{text-decoration:line-through;color:var(--ink-soft)}
+.task-checklist-field-help{display:block;margin-top:5px;color:var(--ink-soft);font-size:11px;line-height:1.4}
+
+@media(max-width:520px){
+  .task-extra{font-size:13px}
+  .task-field{grid-template-columns:1fr;gap:1px}
+  .task-field-label{font-size:10px}
+  .task-subtask{min-height:32px}
+}
