@@ -55,6 +55,9 @@
   .task-subtask input{width:25px;height:25px}
   .task-quick-actions{gap:8px}
   .task-quick-action{min-height:44px;padding:9px 14px;font-size:13px}
+  .journal-add{min-height:44px;padding:8px 11px;font-size:12px}
+  .journal-rule-actions{gap:7px}
+  #itemSheet .status-actions button{min-height:46px;font-size:13px}
 
   .task-editor-checklist-head{align-items:stretch;flex-direction:column}
   .task-editor-checklist-head button{min-height:46px;width:100%;font-size:14px}
