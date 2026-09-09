@@ -1,5 +1,10 @@
 /* Task information stays visible where work happens; empty fields render nothing. */
 .entry-content{min-width:0}
+
+/* Subtle row banding separates adjacent tasks without turning them into cards. */
+.entry-list>.entry:nth-child(even){background:rgba(39,38,35,.035)}
+html[data-theme="dark"] .entry-list>.entry:nth-child(even){background:rgba(255,255,255,.028)}
+
 .task-extra{margin-top:8px;display:grid;gap:9px;color:var(--ink-soft);font-size:12px;line-height:1.45}
 .task-note{white-space:pre-wrap;color:var(--ink);padding-left:10px;border-left:2px solid var(--rule-dark)}
 .task-fields{display:grid;gap:5px}
