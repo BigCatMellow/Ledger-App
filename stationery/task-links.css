@@ -1,0 +1,16 @@
+/* Direct task links: visible, forgiving controls rather than a hidden editor field. */
+.task-link-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.task-link-button{min-height:36px;padding:6px 10px;border:1px solid var(--rule-dark);border-radius:var(--radius-control,9px);background:var(--paper-deep);color:var(--ink);font-size:11px;font-weight:750;letter-spacing:.01em}
+.task-link-add,.task-link-open{border-color:var(--blue)}
+.task-link-open{color:var(--ink)}
+.task-link-edit{color:var(--ink-soft)}
+.task-link-button:active{transform:translateY(1px)}
+
+@media(hover:hover) and (pointer:fine){
+  .task-link-button:hover{border-color:var(--ink)}
+}
+
+@media(max-width:600px){
+  .task-link-actions{gap:8px;margin-top:9px}
+  .task-link-button{min-height:44px;padding:9px 13px;font-size:13px}
+}
