@@ -41,8 +41,6 @@
   function writeLedger(state){
     const value = JSON.stringify(state);
     localStorage.setItem(STORAGE_KEY, value);
-    // Native storage events do not fire in the tab that made the change.
-    // Dispatch one locally so stationery.js reloads its in-memory state too.
     notifyLedger(value);
   }
 
@@ -185,17 +183,21 @@
 
   function deleteJournal(){
     const id = $('journalId').value;
-    if(!id || !confirm('Delete this journal entry?')) return;
+    if(!id) return;
 
+    const before = localStorage.getItem(STORAGE_KEY) || '';
     const state = readLedger();
     const project = activeProject(state);
     if(!project) return;
 
+    const exists = state.journal.some(j => j.id === id && j.p === project.id);
+    if(!exists) return;
     state.journal = state.journal.filter(j => !(j.id === id && j.p === project.id));
     project.workedAt = new Date().toISOString();
     writeLedger(state);
     renderJournal();
     closeJournal();
+    window.dispatchEvent(new CustomEvent('ledger:offer-undo',{detail:{before,message:'Journal entry deleted'}}));
   }
 
   document.addEventListener('click', event => {
