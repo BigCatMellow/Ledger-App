@@ -26,8 +26,8 @@
   <link rel="stylesheet" href="./typography.css?v=1">
   <link rel="stylesheet" href="./project-links.css?v=1">
   <link rel="stylesheet" href="./task-details.css?v=5">
-  <link rel="stylesheet" href="./task-links.css?v=2">
-  <link rel="stylesheet" href="./task-interactions.css?v=1">
+  <link rel="stylesheet" href="./task-links.css?v=3">
+  <link rel="stylesheet" href="./task-interactions.css?v=2">
   <link rel="stylesheet" href="./sync-status.css?v=1">
 </head>
 <body>
@@ -141,12 +141,12 @@
 
   <section id="captureSheet" class="sheet capture-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="captureSheetTitle">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><div><div class="sheet-label">MEMO</div><h2 id="captureSheetTitle">Capture</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <div class="sheet-head"><div><div class="sheet-label">ADD TO PROJECT</div><h2 id="captureSheetTitle">Capture</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
     <form id="captureForm">
       <div class="segmented" role="group" aria-label="Capture type">
         <button type="button" data-kind="NOTE" class="selected">Note</button>
         <button type="button" data-kind="CHECKLIST">Task</button>
-        <button type="button" data-kind="EXECUTION">Structured</button>
+        <button type="button" data-kind="EXECUTION">Detailed task</button>
       </div>
       <label class="field ruled-field"><span>Title / note</span><textarea id="captureTitle" rows="4" required placeholder="Write it down…"></textarea></label>
       <div id="captureTaskFields" hidden>
@@ -164,7 +164,7 @@
 
   <section id="journalSheet" class="sheet journal-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="journalSheetTitle">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><div><div class="sheet-label">Project Journal</div><h2 id="journalSheetTitle">New Thought</h2></div><button class="sheet-close" data-close-journal type="button">×</button></div>
+    <div class="sheet-head"><div><div class="sheet-label">PROJECT JOURNAL</div><h2 id="journalSheetTitle">New Thought</h2></div><button class="sheet-close" data-close-journal type="button">×</button></div>
     <form id="journalForm">
       <input id="journalId" type="hidden">
       <label class="field"><span>Thought</span><textarea id="journalBody" rows="8" required placeholder="Idea, question, observation, decision…"></textarea></label>
@@ -181,11 +181,21 @@
     <div id="historyList" class="history-list"></div>
   </section>
 
+  <section id="workLogSheet" class="sheet" hidden aria-modal="true" role="dialog" aria-labelledby="workLogSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">WORK LOG</div><h2 id="workLogSheetTitle">Log work</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <form id="workLogForm">
+      <p id="workLogProject" class="project-description"></p>
+      <label class="field"><span>What changed?</span><textarea id="workLogSummary" rows="5" required placeholder="Short note about what you worked on…"></textarea></label>
+      <button class="paper-button primary full" type="submit">Add to History</button>
+    </form>
+  </section>
+
   <section id="toolsSheet" class="sheet" hidden aria-modal="true" role="dialog" aria-labelledby="toolsSheetTitle">
     <div class="sheet-handle"></div>
     <div class="sheet-head"><div><div class="sheet-label">UTILITY</div><h2 id="toolsSheetTitle">Tools</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
     <div class="tool-list">
-      <a class="tool-row" href="../sync.html"><span><strong>GitHub sync</strong><small>Send the latest browser snapshot to Notes</small></span><span>→</span></a>
+      <a class="tool-row" href="../sync.html"><span><strong>GitHub sync</strong><small>Connection, backup status, and manual sync</small></span><span>→</span></a>
       <button class="tool-row" data-action="export-md" type="button"><span><strong>Export current project</strong><small>Download a Markdown copy</small></span><span>↓</span></button>
       <button class="tool-row" data-action="import-md" type="button"><span><strong>Import Markdown</strong><small>Add a Markdown file as a new project</small></span><span>↑</span></button>
     </div>
@@ -194,7 +204,7 @@
 
   <section id="projectSheet" class="sheet tall-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="projectSheetTitle">
     <div class="sheet-handle"></div>
-    <div class="sheet-head"><div><div class="sheet-label">PROJECT CARD</div><h2 id="projectSheetTitle">Project</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
+    <div class="sheet-head"><div><div class="sheet-label">PROJECT</div><h2 id="projectSheetTitle">Project</h2></div><button class="sheet-close" data-close-sheet type="button">×</button></div>
     <form id="projectForm">
       <input id="projectId" type="hidden">
       <label class="field"><span>Project title</span><input id="projectTitleInput" type="text" required></label>
@@ -261,6 +271,21 @@
     </form>
   </section>
 
+  <div id="taskLinkBackdrop" class="task-link-sheet-backdrop" hidden></div>
+  <section id="taskLinkSheet" class="task-link-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="taskLinkSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><div><div class="sheet-label">TASK LINK</div><h2 id="taskLinkSheetTitle">Add link</h2></div><button class="sheet-close" data-task-link-close type="button" aria-label="Close task link">×</button></div>
+    <form id="taskLinkForm">
+      <input id="taskLinkItemId" type="hidden">
+      <label class="field"><span>Web address</span><input id="taskLinkUrl" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com"></label>
+      <small id="taskLinkError" class="task-link-error" hidden></small>
+      <div class="task-link-sheet-actions">
+        <button id="taskLinkRemove" class="paper-button task-link-remove" data-task-link-remove type="button" hidden>Remove link</button>
+        <button class="paper-button primary" type="submit">Save link</button>
+      </div>
+    </form>
+  </section>
+
   <div id="roadmapHelpBackdrop" class="roadmap-help-backdrop" hidden></div>
   <section id="roadmapHelpModal" class="roadmap-help-modal" hidden role="dialog" aria-modal="true" aria-labelledby="roadmapHelpTitle">
     <div class="roadmap-help-head">
@@ -281,13 +306,13 @@
     </div>
   </section>
 
-  <script src="./stationery.js?v=3"></script>
+  <script src="./stationery.js?v=4"></script>
   <script src="./theme.js?v=2"></script>
   <script src="./journal.js?v=2"></script>
   <script src="./roadmap-help.js?v=1"></script>
-  <script src="./task-interactions.js?v=1"></script>
+  <script src="./task-interactions.js?v=2"></script>
   <script src="./task-details.js?v=4"></script>
-  <script src="./task-links.js?v=2"></script>
+  <script src="./task-links.js?v=3"></script>
   <script src="./sync-status.js?v=3"></script>
   <script src="./auto-sync.js?v=1"></script>
 </body>
