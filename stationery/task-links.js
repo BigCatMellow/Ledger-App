@@ -66,13 +66,13 @@
     }
   }
 
-  function actionsHtml(item){
+  function linkButtonHtml(item){
     const url=safeUrl(item?.link);
     if(!url){
-      return `<div class="task-link-actions"><button type="button" class="task-link-button task-link-add" data-task-link-manage="${esc(item.id)}" aria-label="Add task link">＋ Link</button></div>`;
+      return `<button type="button" class="task-link-button task-link-add" data-task-link-manage="${esc(item.id)}" aria-label="Add task link">＋ Link</button>`;
     }
     const label=linkLabel(url);
-    return `<div class="task-link-actions"><button type="button" class="task-link-button task-link-open" data-task-link-open="${esc(item.id)}" aria-label="Open ${esc(label)}" title="Open ${esc(label)}">↗</button></div>`;
+    return `<button type="button" class="task-link-button task-link-open" data-task-link-open="${esc(item.id)}" aria-label="Open ${esc(label)}" title="Open ${esc(label)}">↗</button>`;
   }
 
   function ensureEditorField(){
@@ -104,10 +104,16 @@
       const content=entry.children[1];
       if(!item||item.kind==='NOTE'||!content)return;
 
-      entry.querySelectorAll(':scope > .task-link-actions').forEach(node=>node.remove());
-      const chevron=entry.querySelector('.entry-chevron');
-      if(chevron)chevron.insertAdjacentHTML('beforebegin',actionsHtml(item));
-      else entry.insertAdjacentHTML('beforeend',actionsHtml(item));
+      let rail=entry.querySelector(':scope > .task-link-actions');
+      if(!rail){
+        rail=document.createElement('div');
+        rail.className='task-link-actions';
+        const chevron=entry.querySelector('.entry-chevron');
+        if(chevron)chevron.before(rail); else entry.appendChild(rail);
+      }
+
+      rail.querySelectorAll('[data-task-link-open],[data-task-link-manage]').forEach(node=>node.remove());
+      rail.insertAdjacentHTML('afterbegin',linkButtonHtml(item));
     });
   }
 
