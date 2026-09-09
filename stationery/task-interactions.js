@@ -189,8 +189,8 @@
 
       const rail=entry.querySelector(':scope > .task-link-actions');
       if(!rail)return;
-
-      if(!hasChecklist(item)&&!rail.querySelector('[data-task-inline-step]')){
+      rail.querySelectorAll('.task-inline-rail-button').forEach(button=>button.remove());
+      if(!hasChecklist(item)){
         const add=document.createElement('button');
         add.type='button';
         add.className='task-link-button task-inline-rail-button';
@@ -198,14 +198,6 @@
         add.textContent='＋ Step';
         add.setAttribute('aria-label','Add checklist step');
         rail.appendChild(add);
-      }
-
-      if(hasRichDetails(item)&&!rail.querySelector('[data-task-collapse]')){
-        const button=document.createElement('button');
-        button.type='button';
-        button.className='task-link-button task-collapse-button';
-        button.dataset.taskCollapse=item.id;
-        rail.appendChild(button);
       }
     });
   }
@@ -218,14 +210,23 @@
       const rich=hasRichDetails(item);
       const collapsed=rich&&!!ui.collapsed[item.id];
       entry.classList.toggle('task-collapsed',collapsed);
-      const button=entry.querySelector('[data-task-collapse]');
-      if(button){
-        const symbol=collapsed?'▾':'▴';
-        const title=collapsed?'Show task details':'Hide task details';
-        if(button.textContent!==symbol)button.textContent=symbol;
-        if(button.title!==title)button.title=title;
-        button.setAttribute('aria-label',title);
-        button.setAttribute('aria-expanded',collapsed?'false':'true');
+
+      const chevron=entry.querySelector('.entry-chevron');
+      if(!chevron)return;
+      if(rich){
+        chevron.dataset.taskCollapse=item.id;
+        chevron.classList.add('task-detail-toggle');
+        chevron.textContent=collapsed?'⌄':'⌃';
+        chevron.title=collapsed?'Show task details':'Hide task details';
+        chevron.setAttribute('aria-label',chevron.title);
+        chevron.setAttribute('aria-expanded',collapsed?'false':'true');
+      }else{
+        delete chevron.dataset.taskCollapse;
+        chevron.classList.remove('task-detail-toggle');
+        chevron.textContent='›';
+        chevron.removeAttribute('title');
+        chevron.removeAttribute('aria-label');
+        chevron.removeAttribute('aria-expanded');
       }
     });
   }
@@ -364,11 +365,10 @@
       return;
     }
 
-    const reversible=event.target.closest('.task-subtask[data-subtask-id],[data-task-link-edit]');
+    const reversible=event.target.closest('.task-subtask[data-subtask-id]');
     if(reversible){
       const before=localStorage.getItem(STORAGE_KEY)||'';
-      const label=reversible.matches('[data-task-link-edit]')?'Task link changed':'Checklist updated';
-      setTimeout(()=>offerUndo(before,label),0);
+      setTimeout(()=>offerUndo(before,'Checklist updated'),0);
     }
   },true);
 
@@ -382,6 +382,12 @@
       event.preventDefault();
       input.closest('.task-inline-step-editor')?.remove();
     }
+  });
+
+  window.addEventListener('ledger:offer-undo',event=>{
+    const before=event.detail?.before;
+    const message=event.detail?.message||'Changed';
+    offerUndo(before,message);
   });
 
   const lists=['activeItems','openItems','doneItems'].map(id=>document.getElementById(id)).filter(Boolean);
