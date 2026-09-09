@@ -116,7 +116,7 @@
     grid-template-columns:1fr 1fr;
   }
   .task-link-sheet-actions .paper-button{width:100%;min-height:48px}
-  .task-link-sheet-actions .primary:only-child{grid-column:1/-1}
+  .task-link-remove[hidden]+.primary{grid-column:1/-1}
 }
 
 @media(min-width:720px){
