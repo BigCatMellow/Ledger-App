@@ -120,8 +120,15 @@
   function meaningfulMeta(item){
     const parts=[];
     if(item.phase) parts.push(item.phase);
-    if(item.workedAt) parts.push(`worked ${ago(item.workedAt)}`);
-    return parts.join(' · ') || (item.kind==='NOTE'?'memo':'no work note');
+    if(item.workedAt){
+      const worked=new Date(item.workedAt);
+      const created=new Date(item.createdAt||'');
+      const workedMs=worked.getTime();
+      const createdMs=created.getTime();
+      const changedAfterCreation=Number.isFinite(workedMs)&&(!Number.isFinite(createdMs)||Math.abs(workedMs-createdMs)>60000);
+      if(changedAfterCreation)parts.push(`updated ${ago(item.workedAt)}`);
+    }
+    return parts.join(' · ');
   }
 
   function render(){
@@ -146,7 +153,7 @@
     const done = mine.filter(i=>i.status==='DONE');
     const doneTasks = tasks.filter(i=>i.status==='DONE').length;
 
-    $('projectProgress').textContent = tasks.length ? `${doneTasks}/${tasks.length} done` : 'no tasks';
+    $('projectProgress').textContent = tasks.length ? `${doneTasks}/${tasks.length} done` : '';
     $('openCount').textContent = `${open.length}`;
     $('noteCount').textContent = `${notes.length}`;
     $('doneCount').textContent = `${done.length}`;
@@ -168,9 +175,10 @@
     if(!items.length) return `<div class="empty-line">${esc(empty)}</div>`;
     return items.map(item=>{
       const [label,cls]=itemStamp(item);
+      const meta=meaningfulMeta(item);
       return `<article class="entry" data-item="${esc(item.id)}" tabindex="0">
         <span class="stamp ${cls}">${label}</span>
-        <span><div class="entry-title">${esc(item.title||'Untitled')}</div><div class="entry-meta">${esc(meaningfulMeta(item))}</div></span>
+        <span class="entry-main"><div class="entry-title">${esc(item.title||'Untitled')}</div>${meta?`<div class="entry-meta">${esc(meta)}</div>`:''}</span>
         <span class="entry-chevron">›</span>
       </article>`;
     }).join('');
@@ -182,7 +190,12 @@
     const box=$('roadmapSummary');
     if(p.mode!=='ROADMAP'){box.hidden=true;box.innerHTML='';return;}
     const f=p.framing||{};
-    const rows=[['Current',f.currentReality],['Done means',f.done],['Proof',f.proof],['Risk',f.risk]].filter(x=>String(x[1]||'').trim());
+    const rows=[
+      ['Current Reality',f.currentReality],
+      ['Definition of Done',f.done],
+      ['Final Proof',f.proof],
+      ['Highest-Risk Unknown',f.risk]
+    ].filter(x=>String(x[1]||'').trim());
     if(!rows.length){box.hidden=true;box.innerHTML='';return;}
     box.innerHTML=rows.map(([k,v])=>`<div class="roadmap-row"><strong>${esc(k)}</strong><span>${esc(v)}</span></div>`).join('');
     box.hidden=false;
@@ -202,15 +215,15 @@
     }).join(''):'<div class="empty-line">No work history yet.</div>';
   }
 
-  const sheets=['projectsSheet','captureSheet','historySheet','toolsSheet','projectSheet','itemSheet'];
+  const sheets=['projectsSheet','captureSheet','journalSheet','historySheet','toolsSheet','projectSheet','itemSheet','workLogSheet'];
   function openSheet(id){
-    sheets.forEach(x=>$(x).hidden=x!==id);
+    sheets.forEach(x=>{if($(x))$(x).hidden=x!==id;});
     $('sheetBackdrop').hidden=false;
     document.body.style.overflow='hidden';
-    setTimeout(()=>$(id).querySelector('input,textarea,button')?.focus({preventScroll:true}),30);
+    setTimeout(()=>$(id)?.querySelector('input,textarea,button')?.focus({preventScroll:true}),30);
   }
   function closeSheets(){
-    sheets.forEach(x=>$(x).hidden=true); $('sheetBackdrop').hidden=true; document.body.style.overflow='';
+    sheets.forEach(x=>{if($(x))$(x).hidden=true;}); $('sheetBackdrop').hidden=true; document.body.style.overflow='';
   }
 
   function resetCapture(){
@@ -235,7 +248,7 @@
     const item={
       id:uid('i'),p:p.id,kind:captureKind,status:'OPEN',phase:$('capturePhase').value.trim(),title,
       workedAt:t,createdAt:t,notes:'',outcome:$('captureOutcome').value.trim(),inputs:$('captureInputs').value.trim(),
-      acceptance:$('captureAcceptance').value.trim(),dependencies:$('captureDependencies').value.trim(),boundary:'',verification:'',stopCondition:'',completedAt:''
+      acceptance:$('captureAcceptance').value.trim(),dependencies:$('captureDependencies').value.trim(),boundary:'',verification:'',stopCondition:'',completedAt:'',link:'',subtasks:[]
     };
     state.items.push(item); p.workedAt=t; log(`Captured: ${title}`,item.id,p.id); persist(); closeSheets();
   }
@@ -267,7 +280,7 @@
     const p=activeProject(); if(!p)return;
     $('projectList').innerHTML=`
       <button type="button" data-action="edit-current-project"><span>Edit project<small>Title, description, links, roadmap framing</small></span><span>→</span></button>
-      <button type="button" data-action="log-work"><span>Log work session<small>Record activity without changing a task</small></span><span>＋</span></button>
+      <button type="button" data-action="log-work"><span>Log work session<small>Add a short project activity note</small></span><span>＋</span></button>
       <button type="button" data-action="toggle-roadmap"><span>${p.mode==='ROADMAP'?'Use list format':'Turn into roadmap'}<small>Keep the same project and entries</small></span><span>↔</span></button>`;
     $('projectsSheetTitle').textContent='Project';
     openSheet('projectsSheet');
@@ -275,7 +288,7 @@
 
   function openItem(id){
     const item=state.items.find(x=>x.id===id); if(!item)return;
-    $('itemId').value=item.id; $('itemSheetTitle').textContent=item.title||'Entry'; $('itemKindLabel').textContent=item.kind==='NOTE'?'MEMO':item.kind==='EXECUTION'?'STRUCTURED TASK':'TASK';
+    $('itemId').value=item.id; $('itemSheetTitle').textContent=item.title||'Entry'; $('itemKindLabel').textContent=item.kind==='NOTE'?'MEMO':item.kind==='EXECUTION'?'DETAILED TASK':'TASK';
     $('itemTitleInput').value=item.title||''; $('itemPhaseInput').value=item.phase||''; $('itemNotesInput').value=item.notes||''; $('itemOutcomeInput').value=item.outcome||'';
     $('itemInputsInput').value=item.inputs||''; $('itemDependenciesInput').value=item.dependencies||''; $('itemBoundaryInput').value=item.boundary||''; $('itemAcceptanceInput').value=item.acceptance||'';
     $('itemVerificationInput').value=item.verification||''; $('itemStopInput').value=item.stopCondition||'';
@@ -298,8 +311,16 @@
   }
 
   function logWork(){
-    const p=activeProject(); if(!p)return; const summary=prompt('What did you work on?'); if(!summary?.trim())return;
-    p.workedAt=now(); log(summary.trim(),'',p.id); persist(); closeSheets();
+    const p=activeProject(); if(!p)return;
+    $('workLogForm')?.reset();
+    if($('workLogProject'))$('workLogProject').textContent=p.title||'Current project';
+    openSheet('workLogSheet');
+  }
+  function saveWorkLog(e){
+    e.preventDefault();
+    const p=activeProject(); if(!p)return;
+    const summary=$('workLogSummary')?.value.trim(); if(!summary)return;
+    p.workedAt=now(); log(summary,'',p.id); persist(); closeSheets();
   }
   function toggleRoadmap(){
     const p=activeProject(); if(!p)return; p.mode=p.mode==='ROADMAP'?'LIST':'ROADMAP'; p.framing=p.framing||{currentReality:'',done:'',proof:'',inScope:'',notDoing:'',effortLimit:'',risk:''}; p.workedAt=now(); log(`Project format changed to ${p.mode==='ROADMAP'?'roadmap':'list'}: ${p.title}`,'',p.id); persist(); closeSheets();
@@ -327,11 +348,11 @@
   function importMarkdown(text,name){
     const lines=text.replace(/\r/g,'').split('\n'); const titleLine=lines.find(l=>/^#\s+/.test(l)); const title=(titleLine?titleLine.replace(/^#\s+/,'').trim():name.replace(/\.md$/i,''))||'Imported project'; const t=now();
     const p={id:uid('p'),title,description:'',links:[],mode:'LIST',workedAt:t,createdAt:t,framing:{currentReality:'',done:'',proof:'',inScope:'',notDoing:'',effortLimit:'',risk:''}}; state.projects.push(p); state.activeProject=p.id;
-    let phase=''; let paragraph=[]; const flush=()=>{const body=paragraph.join(' ').trim(); if(body){const id=uid('i');state.items.push({id,p:p.id,kind:'NOTE',status:'OPEN',phase,title:body,workedAt:t,createdAt:t,notes:'',outcome:'',inputs:'',acceptance:'',dependencies:'',boundary:'',verification:'',stopCondition:''});log(`Captured: ${body}`,id,p.id);} paragraph=[];};
+    let phase=''; let paragraph=[]; const flush=()=>{const body=paragraph.join(' ').trim(); if(body){const id=uid('i');state.items.push({id,p:p.id,kind:'NOTE',status:'OPEN',phase,title:body,workedAt:t,createdAt:t,notes:'',outcome:'',inputs:'',acceptance:'',dependencies:'',boundary:'',verification:'',stopCondition:'',link:'',subtasks:[]});log(`Captured: ${body}`,id,p.id);} paragraph=[];};
     for(const line of lines){
       if(/^#\s+/.test(line))continue;
       const h=line.match(/^##+\s+(.+)/); if(h){flush();phase=h[1].trim();continue;}
-      const task=line.match(/^\s*-\s*\[([ xX])\]\s+(.+)/); if(task){flush();const id=uid('i');state.items.push({id,p:p.id,kind:'CHECKLIST',status:task[1].trim()?'DONE':'OPEN',phase,title:task[2].trim(),workedAt:t,createdAt:t,notes:'',outcome:'',inputs:'',acceptance:'',dependencies:'',boundary:'',verification:'',stopCondition:'',completedAt:task[1].trim()?t:''});log(`Captured: ${task[2].trim()}`,id,p.id);continue;}
+      const task=line.match(/^\s*-\s*\[([ xX])\]\s+(.+)/); if(task){flush();const id=uid('i');state.items.push({id,p:p.id,kind:'CHECKLIST',status:task[1].trim()?'DONE':'OPEN',phase,title:task[2].trim(),workedAt:t,createdAt:t,notes:'',outcome:'',inputs:'',acceptance:'',dependencies:'',boundary:'',verification:'',stopCondition:'',completedAt:task[1].trim()?t:'',link:'',subtasks:[]});log(`Captured: ${task[2].trim()}`,id,p.id);continue;}
       if(!line.trim()){flush();continue;} paragraph.push(line.trim());
     }
     flush(); log(`Imported Markdown project: ${p.title}`,'',p.id); persist(); closeSheets();
@@ -362,6 +383,7 @@
   $('captureForm').addEventListener('submit',createItem);
   $('projectForm').addEventListener('submit',saveProject);
   $('itemForm').addEventListener('submit',saveItem);
+  $('workLogForm')?.addEventListener('submit',saveWorkLog);
   $('newProjectTop').addEventListener('click',()=>openProjectEditor(null));
   $('importFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;importMarkdown(await f.text(),f.name);e.target.value='';});
   window.addEventListener('storage',e=>{if(e.key===STORAGE_KEY)render();});
