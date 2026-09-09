@@ -1,4 +1,4 @@
-/* Direct task interactions: compact controls, forgiving touch targets, no new visual theme. */
+/* Task interactions share one quiet utility language: small visually, forgiving to tap. */
 .task-open-header-actions{display:flex;align-items:center;gap:8px}
 .task-reorder-toggle{
   position:relative;
@@ -6,21 +6,24 @@
   padding:3px 7px;
   border:1px solid var(--rule-dark);
   border-radius:var(--radius-small,6px);
-  background:var(--paper-deep);
+  background:transparent;
   color:var(--ink-soft);
   font-size:9px;
   font-weight:750;
-  letter-spacing:.03em;
-  text-transform:none;
+  letter-spacing:.02em;
 }
 .task-reorder-toggle::before{content:"";position:absolute;inset:-7px -4px}
-.task-reorder-toggle[aria-pressed="true"]{border-color:var(--verm);color:var(--verm-dark)}
+.task-reorder-toggle[aria-pressed="true"]{border-color:var(--verm);color:var(--verm-dark);background:var(--paper-deep)}
 .task-reorder-toggle:disabled{opacity:.35;cursor:default}
 
-/* While reordering, temporarily replace link controls with simple up/down controls. */
-#openItems.task-reorder-mode .task-link-actions{display:none}
-#openItems.task-reorder-mode .entry:has(.task-order-controls){grid-template-columns:54px minmax(0,1fr) auto 18px}
-.task-order-controls{display:flex;align-items:center;gap:4px;justify-self:end;align-self:start}
+/* Reorder mode temporarily becomes the task row's only right-side interaction. */
+#openItems.task-reorder-mode .task-link-actions,
+#openItems.task-reorder-mode .entry-chevron{display:none}
+#openItems.task-reorder-mode .entry:has(.task-order-controls){
+  grid-template-columns:54px minmax(0,1fr) auto;
+  column-gap:8px;
+}
+.task-order-controls{display:flex;align-items:center;gap:4px;justify-self:end;align-self:center}
 .task-order-controls button{
   position:relative;
   width:30px;
@@ -37,24 +40,40 @@
 .task-order-controls button::before{content:"";position:absolute;inset:-6px -3px}
 .task-order-controls button:disabled{opacity:.28}
 
-/* Add-step actions remain small visually even though their tap target is larger. */
+/* Checklist actions live with the checklist, not in a separate menu. */
 .task-checklist-head{align-items:center}
 .task-checklist-add{
   position:relative;
   margin-left:auto;
   min-height:26px;
-  padding:3px 7px;
-  border:1px solid var(--rule-dark);
-  border-radius:var(--radius-small,6px);
-  background:var(--paper-deep);
-  color:var(--ink-soft);
+  padding:3px 2px;
+  border:0;
+  background:transparent;
+  color:var(--verm-dark);
   font-size:9px;
   font-weight:800;
   line-height:1;
 }
-.task-checklist-add::before,.task-inline-rail-button::before,.task-collapse-button::before{content:"";position:absolute;inset:-6px -3px}
-.task-inline-rail-button,.task-collapse-button{font-size:9px!important;min-height:26px!important;padding:3px 6px!important}
-.task-collapse-button{width:27px;padding-left:0!important;padding-right:0!important;font-size:12px!important}
+.task-checklist-add::before,.task-inline-rail-button::before{content:"";position:absolute;inset:-7px -4px}
+.task-inline-rail-button{font-size:9px!important;min-height:26px!important;padding:3px 6px!important}
+
+/* The existing row chevron doubles as the disclosure control when details exist. */
+.entry-chevron{align-self:center;justify-self:end}
+.entry-chevron.task-detail-toggle{
+  position:relative;
+  width:18px;
+  min-width:18px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  color:var(--ink-soft);
+  font-size:14px;
+  line-height:1;
+  cursor:pointer;
+  border-radius:var(--radius-small,6px);
+}
+.entry-chevron.task-detail-toggle::before{content:"";position:absolute;inset:-7px -6px}
+.entry.task-collapsed .task-extra{display:none!important}
 
 .task-inline-step-editor{
   display:grid;
@@ -92,10 +111,7 @@
 .task-inline-step-editor [data-task-inline-save]{border-color:var(--verm);color:var(--verm-dark)}
 .task-inline-step-editor [data-task-inline-cancel]{width:38px;padding:0;font-size:18px;color:var(--ink-soft)}
 
-/* Collapse only the rich body; task title, status, metadata, links, and chevron stay visible. */
-.entry.task-collapsed .task-extra{display:none!important}
-
-/* One-action safety net. */
+/* One-action safety net instead of confirmation dialogs. */
 .ledger-undo-bar{
   position:fixed;
   z-index:80;
@@ -133,16 +149,18 @@ html[data-theme="dark"] .ledger-undo-bar{background:#131210;border-color:#504a40
 html[data-theme="dark"] .ledger-undo-bar button{background:#2d2923;border-color:#5b5449;color:#fff7ec}
 
 @media(hover:hover) and (pointer:fine){
-  .task-reorder-toggle:hover,.task-order-controls button:hover,.task-checklist-add:hover,.task-inline-step-editor button:hover{border-color:var(--ink)}
+  .task-reorder-toggle:hover,.task-order-controls button:hover,.task-inline-step-editor button:hover{border-color:var(--ink)}
+  .task-checklist-add:hover{color:var(--ink)}
+  .entry-chevron.task-detail-toggle:hover{background:rgba(102,122,131,.08);color:var(--ink)}
 }
 
 @media(max-width:600px){
   .task-open-header-actions{gap:6px}
   .task-reorder-toggle{min-height:28px;padding:4px 7px;font-size:9px}
   .task-order-controls button{width:32px;height:32px}
-  .task-checklist-add{min-height:28px;padding:4px 7px;font-size:10px}
+  .task-checklist-add{min-height:28px;padding:4px 2px;font-size:10px}
   .task-inline-rail-button{font-size:9px!important;min-height:28px!important}
-  .task-collapse-button{width:29px;min-height:28px!important}
+  .entry-chevron.task-detail-toggle{height:30px;font-size:15px}
   .task-inline-step-editor{grid-template-columns:minmax(0,1fr) auto;padding:8px}
   .task-inline-step-editor input{grid-column:1/-1;min-height:46px;font-size:16px}
   .task-inline-step-editor button{min-height:42px;font-size:12px}
