@@ -16,12 +16,8 @@
 .task-subtask.done span{text-decoration:line-through;color:var(--ink-soft)}
 .task-subtask:active{background:rgba(166,83,73,.07)}
 
-/* The everyday actions live on the task instead of behind its editor. */
-.task-quick-actions{display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
-.task-quick-action{min-height:38px;padding:7px 12px;border:1px solid var(--rule-dark);border-radius:var(--radius-control,9px);background:var(--paper-deep);color:var(--ink);font-size:11px;font-weight:750;letter-spacing:.01em}
-.task-action-start{border-color:var(--blue)}
-.task-action-done{border-color:var(--verm);color:var(--verm-dark)}
-.task-quick-action:active{transform:translateY(1px)}
+/* Status remains visible in the task stamp, but status changes stay in the task editor. */
+.task-quick-actions{display:none}
 
 /* Real checklist editing: no markdown-style [ ] syntax required. */
 .task-editor-checklist{border-top:1px dashed var(--rule-dark);padding-top:12px}
@@ -44,7 +40,7 @@
 
 @media(hover:hover) and (pointer:fine){
   .task-subtask:hover{background:rgba(166,83,73,.045)}
-  .task-quick-action:hover,.task-editor-row-actions button:hover,.task-editor-checklist-head button:hover{border-color:var(--ink)}
+  .task-editor-row-actions button:hover,.task-editor-checklist-head button:hover{border-color:var(--ink)}
 }
 
 @media(max-width:600px){
@@ -53,8 +49,6 @@
   .task-field-label{font-size:10px}
   .task-subtask{min-height:46px;grid-template-columns:28px minmax(0,1fr);gap:9px;padding:5px 4px}
   .task-subtask input{width:25px;height:25px}
-  .task-quick-actions{gap:8px}
-  .task-quick-action{min-height:44px;padding:9px 14px;font-size:13px}
   .journal-add{min-height:44px;padding:8px 11px;font-size:12px}
   .journal-rule-actions{gap:7px}
   #itemSheet .status-actions button{min-height:46px;font-size:13px}
