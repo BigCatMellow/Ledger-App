@@ -54,9 +54,9 @@
   function linkLabel(url){
     try{
       const parsed=new URL(url);
-      return parsed.hostname.replace(/^www\./,'')||'Open Link';
+      return parsed.hostname.replace(/^www\./,'')||'task link';
     }catch(e){
-      return 'Open Link';
+      return 'task link';
     }
   }
 
@@ -65,7 +65,8 @@
     if(!url){
       return `<div class="task-link-actions"><button type="button" class="task-link-button task-link-add" data-task-link-edit="${esc(item.id)}">＋ Link</button></div>`;
     }
-    return `<div class="task-link-actions"><button type="button" class="task-link-button task-link-open" data-task-link-open="${esc(item.id)}" aria-label="Open task link: ${esc(linkLabel(url))}">↗ ${esc(linkLabel(url))}</button><button type="button" class="task-link-button task-link-edit" data-task-link-edit="${esc(item.id)}" aria-label="Edit task link">Edit</button></div>`;
+    const label=linkLabel(url);
+    return `<div class="task-link-actions"><button type="button" class="task-link-button task-link-open" data-task-link-open="${esc(item.id)}" aria-label="Open task link: ${esc(label)}" title="Open ${esc(label)}">↗ Open</button><button type="button" class="task-link-button task-link-edit" data-task-link-edit="${esc(item.id)}" aria-label="Edit task link" title="Edit task link">Edit</button></div>`;
   }
 
   function enhance(){
@@ -75,10 +76,11 @@
       const item=items.get(entry.dataset.item);
       const content=entry.children[1];
       if(!item||item.kind==='NOTE'||!content)return;
-      content.querySelector('.task-link-actions')?.remove();
-      const meta=content.querySelector('.entry-meta');
-      if(meta)meta.insertAdjacentHTML('afterend',actionsHtml(item));
-      else content.insertAdjacentHTML('beforeend',actionsHtml(item));
+
+      entry.querySelectorAll('.task-link-actions').forEach(node=>node.remove());
+      const chevron=entry.querySelector('.entry-chevron');
+      if(chevron)chevron.insertAdjacentHTML('beforebegin',actionsHtml(item));
+      else entry.insertAdjacentHTML('beforeend',actionsHtml(item));
     });
   }
 
