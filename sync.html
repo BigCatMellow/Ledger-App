@@ -15,7 +15,7 @@ main{max-width:760px;margin:0 auto;padding:24px 16px 64px}.back{display:inline-b
 <main>
 <a class="back" href="./index.html">← Back to Ledger</a>
 <h1>Ledger report sync</h1>
-<p class="lead">Sync the Ledger data already stored in this browser to a private Notes repository. GitHub Actions can then use that snapshot for reports and automation.</p>
+<p class="lead">Sync the Ledger data already stored in this browser to a private Notes repository. If you remember the connection, the main Ledger page can keep that snapshot current automatically.</p>
 <p class="setup-help">New to Ledger sync? <a href="https://github.com/BigCatMellow/Ledger-App/blob/main/docs/wiki/Set-Up-Your-Notes-Repository.md" target="_blank" rel="noopener noreferrer">Read the How to Sync guide →</a></p>
 
 <div class="card info">
@@ -45,9 +45,9 @@ main{max-width:760px;margin:0 auto;padding:24px 16px 64px}.back{display:inline-b
 <div class="card">
   <strong>Automatic sync behavior</strong>
   <div class="checks" style="margin-top:10px">
-    <div><span>1.</span><span>If you remember the connection, reopening this page restores it and resumes sync automatically. Otherwise, paste the token again for a new browser session.</span></div>
-    <div><span>2.</span><span>Leave this tab open while you use Ledger. It listens for Ledger storage changes and syncs after a short delay.</span></div>
-    <div><span>3.</span><span>If the tab is closed, reports and automations use the most recent snapshot that reached GitHub.</span></div>
+    <div><span>1.</span><span>Enable <strong>Remember GitHub connection on this device</strong> once on a trusted device. The main Ledger page can then sync without keeping this page open.</span></div>
+    <div><span>2.</span><span>Ledger checks local data about every 30 seconds and only contacts GitHub when meaningful project content has changed.</span></div>
+    <div><span>3.</span><span>Use this page whenever you want to sync manually, change the repository or token, or troubleshoot the connection.</span></div>
   </div>
 </div>
 
